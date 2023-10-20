@@ -5,9 +5,11 @@ An simple way to share your highest damage with your friends
 - **Play VineBoom when you higher crit is beat**
 - **Also work with heals**
 
-`/topcrit -> print your current higher crit.`
+`/topcrit or /tc -> print your current higher crit.`
+`/topheal or /th-> print your current higher heal.`
+`/critsound or /cs -> Turn on/off the crit sound effect.`
+`/crithelp or /ch -> Open command menu.`
 
-`/topheal -> print your current higher heal.`
 
 Note that due to limitations of the 1.12 API, behind the scenes, some cases is missing.<br/>
 

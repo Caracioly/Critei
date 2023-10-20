@@ -28,7 +28,7 @@ CritNotifier:SetScript("OnEvent", function()
         HIGHEST_CRIT = HIGHEST_CRIT or 0
         HIGHEST_HEAL = HIGHEST_HEAL or 0
         critSound = critSound or true
-        LANGUAGE = LANGUAGE or 'en-us'
+        LANGUAGE = 'en-us'
     end
 
     -- translation language

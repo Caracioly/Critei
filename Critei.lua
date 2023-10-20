@@ -1,6 +1,7 @@
 local CritNotifier = CreateFrame('FRAME')
 local playerName = UnitName("player")
 local spellName = ""
+local critDamage = 0
 
 CritNotifier:RegisterEvent('CHAT_MSG_COMBAT_SELF_HITS')
 CritNotifier:RegisterEvent('CHAT_MSG_SPELL_SELF_DAMAGE')
@@ -25,57 +26,88 @@ CritNotifier:SetScript("OnEvent", function()
 
     -- when you do crit spell damage
     if event == 'CHAT_MSG_SPELL_SELF_DAMAGE' then
-        local startIndex = string.find(arg1, "Your ")
-        local endIndex = string.find(arg1, "crits")
-        if startIndex and endIndex then
-            spellName = string.sub(arg1, startIndex + 5, endIndex - 1)
+        critDamage = 0
+        local startSpellNameIndex = string.find(arg1, "Your ")
+        local endSpellNameIndex = string.find(arg1, "crit")
+        if startSpellNameIndex and endSpellNameIndex then
+            spellName = string.sub(arg1, startSpellNameIndex + 5, endSpellNameIndex - 1)
+
+            local startDamageIndex = string.find(arg1, "for ")
+            local endDamageIndex = string.find(arg1, "%.")
+
+            if startDamageIndex and endDamageIndex then
+                critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex))
+            end
+
+            if critDamage > HIGHEST_CRIT then
+                HIGHEST_CRIT = critDamage
+                msg = "Critei " .. critDamage .. " com " .. spellName -- damage case
+                if critSound then
+                    PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
+                end
+                SendChatMessage(msg, "YELL", nil)
+            end
         end
+
     end
 
     -- when you crit a healing spell
     if event == 'CHAT_MSG_SPELL_SELF_BUFF' then
+        critDamage = 0
         local startIndex = string.find(arg1, "Your ")
         local endIndex = string.find(arg1, "critically")
         if startIndex and endIndex then
             spellName = string.sub(arg1, startIndex + 5, endIndex - 1)
+
+            local startDamageIndex = string.find(arg1, "for ")
+            local endDamageIndex = string.find(arg1, "%.")
+
+            if startDamageIndex and endDamageIndex then
+                critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex))
+            end
+
+            if critDamage > HIGHEST_HEAL then
+                HIGHEST_HEAL = critDamage
+                msg = "Curei " .. critDamage .. " com " .. spellName -- heal case
+                if critSound then
+                    PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
+                end
+                SendChatMessage(msg, "YELL", nil)
+            end
         end
+
     end
 
     -- when you crit a Auto Ataque
     if event == 'CHAT_MSG_COMBAT_SELF_HITS' then
+        critDamage = 0
         local startIndex = string.find(arg1, "You ")
         local endIndex = string.find(arg1, "crit")
         if startIndex and endIndex then
             spellName = "Auto Ataque"
-        end
-    end
 
-    -- When you crital hit
-    if event == "UNIT_COMBAT" and arg3 == "CRITICAL" and arg1 == 'target' then
-        local msg = ""
-        local critAmount = arg4
-        if arg2 == 'HEAL' then
-            if arg4 > HIGHEST_HEAL then
-                HIGHEST_HEAL = critAmount
-                msg = "Curei " .. critAmount .. " no " .. spellName -- heal case
+            local startDamageIndex = string.find(arg1, "for ")
+            local endDamageIndex = string.find(arg1, "%.")
+
+            if startDamageIndex and endDamageIndex then
+                critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex))
+            end
+
+            if critDamage > HIGHEST_CRIT then
+                HIGHEST_CRIT = critDamage
+                msg = "Critei " .. critDamage .. " com " .. spellName -- damage case
                 if critSound then
                     PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
                 end
-            end
-        else
-            if arg4 > HIGHEST_CRIT then
-                HIGHEST_CRIT = critAmount
-                msg = "Critei " .. critAmount .. " no " ..spellName -- damage case
-                if critSound then
-                    PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
-                end
+                SendChatMessage(msg, "YELL", nil)
             end
         end
-        SendChatMessage(msg, "YELL", nil)
+
     end
 
+    -- if someone in the party critical hit as well you gonna hear the crit sound
     if event == 'CHAT_MSG_YELL' and arg2 ~= playerName then
-        if string.find(arg1, "Critei (%d+) de") then
+        if string.find(arg1, "Critei") and string.find(arg1, "com") then
             if critSound then
                 PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
             end
@@ -133,4 +165,3 @@ CritNotifier:SetScript("OnEvent", function()
         end
     end
 end)
-

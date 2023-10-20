@@ -3,13 +3,13 @@ local playerName = UnitName("player")
 local spellName = ""
 local critDamage = 0
 
+CritNotifier:RegisterEvent("PLAYER_ENTERING_WORLD")
+CritNotifier:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 CritNotifier:RegisterEvent('CHAT_MSG_COMBAT_SELF_HITS')
 CritNotifier:RegisterEvent('CHAT_MSG_SPELL_SELF_DAMAGE')
 CritNotifier:RegisterEvent('CHAT_MSG_SPELL_SELF_BUFF')
-CritNotifier:RegisterEvent('COMBAT_TEXT_UPDATE')
 CritNotifier:RegisterEvent('CHAT_MSG_YELL')
 CritNotifier:RegisterEvent('ADDON_LOADED')
-CritNotifier:RegisterEvent('UNIT_COMBAT')
 CritNotifier:SetScript("OnEvent", function()
     -- When ADDON is loaded
     if event == "ADDON_LOADED" and arg1 == "Critei" then
@@ -23,6 +23,22 @@ CritNotifier:SetScript("OnEvent", function()
             critSound = true
         end
         LANGUAGE = 'pt-br'
+    end
+
+    if (event == 'PLAYER_ENTERING_WORLD' or event == 'ZONE_CHANGED_NEW_AREA') then
+        local inInstance, instanceType = IsInInstance()
+        if inInstance and (instanceType == "party" or instanceType == "raid") then
+            local instancia = ""
+            if instanceType == "party" then
+                instancia = "Dungeon"
+            elseif instanceType == "raid" then
+                instancia = "Raid"
+            end
+            print("Entrando em uma " .. instancia .. ".")
+            print("Resetando os valores criticos.")
+            HIGHEST_CRIT = 0
+            HIGHEST_HEAL = 0
+        end
     end
 
     -- when you do crit spell damage
@@ -234,3 +250,4 @@ CritNotifier:SetScript("OnEvent", function()
         HIGHEST_HEAL = 0
     end
 end)
+

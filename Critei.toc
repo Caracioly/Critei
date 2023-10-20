@@ -1,0 +1,8 @@
+﻿## Interface: 11200
+## Title: Critei
+## Notes: Crit notify
+## Author: andre
+## Version: 0.1
+## SavedVariablesPerCharacter: HIGHEST_CRIT, HIGHEST_HEAL, critSound
+
+Critei.lua

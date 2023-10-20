@@ -33,7 +33,7 @@ CritNotifier:SetScript("OnEvent", function()
             spellName = string.sub(arg1, startSpellNameIndex + 5, endSpellNameIndex - 1)
 
             local startDamageIndex = string.find(arg1, "for ")
-            local endDamageIndex = string.find(arg1, "%.")
+            local _, endDamageIndex = string.find(arg1, "%d+ ", startDamageIndex)
 
             if startDamageIndex and endDamageIndex then
                 critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex))
@@ -154,14 +154,11 @@ CritNotifier:SetScript("OnEvent", function()
     end
 
     -- debug reset crit values
-    SLASH_CRESET1 = "/critreset"
+    SLASH_CRESET1 = "/critclear"
+    SLASH_CRESET2 = "/cc"
     SlashCmdList["CRESET"] = function(ms)
-        if playerName == "Urso" or playerName == "Tchola" then
-            print("Resetando os valores criticos")
-            HIGHEST_CRIT = 0
-            HIGHEST_HEAL = 0
-        else
-            print("Você não possui requisitos para usar esse comando")
-        end
+        print("Resetando os valores criticos")
+        HIGHEST_CRIT = 0
+        HIGHEST_HEAL = 0
     end
 end)

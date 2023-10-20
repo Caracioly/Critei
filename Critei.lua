@@ -22,6 +22,7 @@ CritNotifier:SetScript("OnEvent", function()
         if critSound == nil then
             critSound = true
         end
+        LANGUAGE = 'pt-br'
     end
 
     -- when you do crit spell damage
@@ -41,7 +42,11 @@ CritNotifier:SetScript("OnEvent", function()
 
             if critDamage > HIGHEST_CRIT then
                 HIGHEST_CRIT = critDamage
-                msg = "Critei " .. critDamage .. " com " .. spellName -- damage case
+                if LANGUAGE == 'pt-br' then
+                    msg = "Critei " .. critDamage .. " com " .. spellName -- damage case
+                else
+                    msg = "Crited " .. critDamage .. " with " .. spellName
+                end
                 if critSound then
                     PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
                 end
@@ -68,7 +73,11 @@ CritNotifier:SetScript("OnEvent", function()
 
             if critDamage > HIGHEST_HEAL then
                 HIGHEST_HEAL = critDamage
-                msg = "Curei " .. critDamage .. " com " .. spellName -- heal case
+                if LANGUAGE == "pt-br" then
+                    msg = "Curei " .. critDamage .. " com " .. spellName -- heal case
+                else
+                    msg = "Crited Healed " .. critDamage .. " with " .. spellName
+                end
                 if critSound then
                     PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
                 end
@@ -84,7 +93,11 @@ CritNotifier:SetScript("OnEvent", function()
         local startIndex = string.find(arg1, "You ")
         local endIndex = string.find(arg1, "crit")
         if startIndex and endIndex then
-            spellName = "Auto Ataque"
+            if LANGUAGE == "pt-br" then
+                spellName = "Auto Ataque"
+            else
+                spellName = "an Auto Attack"
+            end
 
             local startDamageIndex = string.find(arg1, "for ")
             local endDamageIndex = string.find(arg1, "%.")
@@ -95,7 +108,12 @@ CritNotifier:SetScript("OnEvent", function()
 
             if critDamage > HIGHEST_CRIT then
                 HIGHEST_CRIT = critDamage
-                msg = "Critei " .. critDamage .. " com " .. spellName -- damage case
+                if LANGUAGE == "pt-br" then
+                    msg = "Critei " .. critDamage .. " com " .. spellName -- damage case  
+                else
+                    msg = "Crited " .. critDamage .. " with " .. spellName
+                end
+
                 if critSound then
                     PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
                 end
@@ -107,7 +125,8 @@ CritNotifier:SetScript("OnEvent", function()
 
     -- if someone in the party critical hit as well you gonna hear the crit sound
     if event == 'CHAT_MSG_YELL' and arg2 ~= playerName then
-        if string.find(arg1, "Critei") and string.find(arg1, "com") then
+        if string.find(arg1, "Critei") and string.find(arg1, "com") or string.find(arg1, "Crited") and
+            string.find(arg1, "with") then
             if critSound then
                 PlaySoundFile("Interface\\AddOns\\Critei\\critSFX.ogg")
             end
@@ -119,14 +138,22 @@ CritNotifier:SetScript("OnEvent", function()
     SLASH_CRIT1 = '/topcrit'
     SLASH_CRIT2 = '/tc'
     SlashCmdList["CRIT"] = function(msg)
-        print("Seu maior dano critico foi " .. HIGHEST_CRIT)
+        if LANGUAGE == "pt-br" then
+            print("Seu maior dano critico foi " .. HIGHEST_CRIT)
+        else
+            print("Your highest crit damage was " .. HIGHEST_CRIT)
+        end
     end
 
     -- Slash command to check your heal record
     SLASH_HEAL1 = "/topheal"
     SLASH_HEAL2 = '/th'
     SlashCmdList["HEAL"] = function(msg)
-        print("Sua maior cura critica foi " .. HIGHEST_HEAL)
+        if LANGUAGE == "pt-br" then
+            print("Sua maior cura critica foi " .. HIGHEST_HEAL)
+        else
+            print("Your highest crit heal was " .. HIGHEST_HEAL)
+        end
     end
 
     -- Turn on / off the crit sound
@@ -135,9 +162,41 @@ CritNotifier:SetScript("OnEvent", function()
     SlashCmdList["CSFX"] = function(msg)
         critSound = not critSound
         if critSound then
-            print("Som habilitado")
+            if LANGUAGE == "pt-br" then
+                print("Som habilitado")
+            else
+                print("Sound activated")
+            end
         else
-            print("Som desabilitado")
+            if LANGUAGE == "pt-br" then
+                print("Som desabilitado")
+            else
+                print("Sound disabled")
+            end
+        end
+    end
+
+    -- Change language to English
+    SLASH_EN1 = "/cl-en"
+    SlashCmdList["EN"] = function(msg)
+        if LANGUAGE == "en-us" then
+            print("Already in English")
+        end
+        if LANGUAGE == "pt-br" then
+            LANGUAGE = "en-us"
+            print("Changed to English")
+        end
+    end
+
+    -- change language to portuguese
+    SLASH_BR1 = "/cl-br"
+    SlashCmdList["BR"] = function(msg)
+        if LANGUAGE == "pt-br" then
+            print("Já está em Portugues")
+        end
+        if LANGUAGE == "en-us" then
+            LANGUAGE = "pt-br"
+            print("Alterado para Portugues")
         end
     end
 
@@ -145,19 +204,32 @@ CritNotifier:SetScript("OnEvent", function()
     SLASH_CHLP1 = "/crithelp"
     SLASH_CHLP2 = "/ch"
     SlashCmdList["CHLP"] = function(msg)
-        print("---Lista de Comandos---")
-        print("/topcrit ou /tc -> Mostra o maior dano critico do personagem.")
-        print("/topheal ou /th-> Mostra a maior cura critica do personagem.")
-        print("/critsound ou /cs -> Habilita / Desabilita o som do critico.")
-        print("/crithelp or /ch -> Abre o menu de comandos.")
-        print("------------------------------")
+        if LANGUAGE == "pt-br" then
+            print("---Lista de Comandos---")
+            print("/topcrit ou /tc -> Mostra o maior dano critico do personagem.")
+            print("/topheal ou /th-> Mostra a maior cura critica do personagem.")
+            print("/critsound ou /cs -> Habilita / Desabilita o som do critico.")
+            print("/crithelp or /ch -> Abre o menu de comandos.")
+            print("------------------------------")
+        else
+            print("---Command List---")
+            print("/topcrit ou /tc -> Show the highest crit caused by you.")
+            print("/topheal ou /th-> Show the highest crit heal caused by you.")
+            print("/critsound ou /cs -> turn on / off the crit sound.")
+            print("/crithelp or /ch -> Show the command menu.")
+            print("------------------------------")
+        end
     end
 
     -- debug reset crit values
     SLASH_CRESET1 = "/critclear"
     SLASH_CRESET2 = "/cc"
     SlashCmdList["CRESET"] = function(ms)
-        print("Resetando os valores criticos")
+        if LANGUAGE == "pt-br" then
+            print("Resetando os valores criticos")
+        else
+            print("Resetting critical values")
+        end
         HIGHEST_CRIT = 0
         HIGHEST_HEAL = 0
     end

@@ -3,6 +3,6 @@
 ## Notes: Crit notify
 ## Author: andre
 ## Version: 0.1
-## SavedVariablesPerCharacter: HIGHEST_CRIT, HIGHEST_HEAL, critSound
+## SavedVariablesPerCharacter: HIGHEST_CRIT, HIGHEST_HEAL, critSound, LANGUAGE
 
 Critei.lua

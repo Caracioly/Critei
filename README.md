@@ -1,10 +1,12 @@
-# Critei - TWoW 1.12 addOn
+# Critei - Vanilla / TWoW v1.12 addOn
 
-An simple way to share your highest damage with your friends
-- **Sends a Yell message when you beat you previously higher crit**
-- **Play VineBoom when your higher crit is beat**
-- **Also work with heals**
+A simple way to share your highest damage with your friends
+- **Sends a Yell message when you beat your previously higher crit**
+- **Play VineBoom sound effect when you Yell that message above**
+-**VineBoom also plays when someone next you with the addon gets a crit**
+- **Also works with heals**
 
+### In-game commands:
 Print your current higher crit.
 ```shell
 /topcrit or /tc

@@ -3,6 +3,7 @@ local playerName = UnitName("player")
 local spellName = ""
 local instance = ""
 local critDamage = 0
+local lastPlayerCritName = ""
 
 CritNotifier:RegisterEvent("PLAYER_ENTERING_WORLD")
 CritNotifier:RegisterEvent("ZONE_CHANGED_NEW_AREA")

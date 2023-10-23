@@ -1,8 +1,8 @@
 local CritNotifier = CreateFrame('FRAME')
 local playerName = UnitName("player")
 local spellName = ""
-local critDamage = 0
 local instance = ""
+local critDamage = 0
 
 CritNotifier:RegisterEvent("PLAYER_ENTERING_WORLD")
 CritNotifier:RegisterEvent("ZONE_CHANGED_NEW_AREA")
@@ -87,18 +87,21 @@ CritNotifier:SetScript("OnEvent", function()
         if startSpellNameIndex and endSpellNameIndex then
             spellName = string.sub(arg1, startSpellNameIndex + 5, endSpellNameIndex - 2)
 
-            local startDamageIndex = string.find(arg1, "for ")
+            local startDamageIndex = string.find(arg1, "for %d+")
             if startDamageIndex then
-                local _, endDamageIndex = string.find(arg1, "%d+ ", startDamageIndex)
+                local _, endDamageIndex = string.find(arg1, "%d+", startDamageIndex)
+                if not endDamageIndex then
+                    endDamageIndex = string.find(arg1, "%.", startDamageIndex)
+                end
                 if endDamageIndex then
                     critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex))
                 end
-            end
 
-            if critDamage > HIGHEST_CRIT then
-                HIGHEST_CRIT = critDamage
-                PlayCritSound()
-                SendYellMessage(string.format(languageStrings[LANGUAGE].autoAndSpellSCrit, critDamage, spellName))
+                if critDamage > HIGHEST_CRIT then
+                    HIGHEST_CRIT = critDamage
+                    PlayCritSound()
+                    SendYellMessage(string.format(languageStrings[LANGUAGE].autoAndSpellSCrit, critDamage, spellName))
+                end
             end
         end
 
@@ -142,9 +145,8 @@ CritNotifier:SetScript("OnEvent", function()
 
         -- when someone next to you crit
     elseif event == 'CHAT_MSG_YELL' and arg2 ~= playerName then
-        if string.find(arg1, "Critei") and
-            (string.find(arg1, "com") or string.find(arg1, "Crited") or string.find(arg1, "Critically healed")) and
-            string.find(arg1, "with") then
+        if string.find(arg1, "Critei") and string.find(arg1, "com") or string.find(arg1, "Crited") and
+            string.find(arg1, "with") or string.find(arg1, "Critically healed") and string.find(arg1, "with") then
             PlayCritSound()
         end
     end

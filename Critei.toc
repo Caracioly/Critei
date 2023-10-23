@@ -1,8 +1,8 @@
 ﻿## Interface: 11200
 ## Title: Critei
-## Notes: Crit notify
+## Notes: Crit Notifier
 ## Author: andre
-## Version: 0.1
+## Version: 1.0.1
 ## SavedVariablesPerCharacter: HIGHEST_CRIT, HIGHEST_HEAL, critSound, LANGUAGE
 
 Critei.lua

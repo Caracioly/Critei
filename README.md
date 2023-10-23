@@ -3,7 +3,7 @@
 A simple way to share your highest damage with your friends
 - **Sends a Yell message when you beat your previously higher crit**
 - **Play VineBoom sound effect when you Yell that message above**
--**VineBoom also plays when someone next you with the addon gets a crit**
+- **VineBoom also plays when someone next you with the addon gets a crit**
 - **Also works with heals**
 
 ### In-game commands:
@@ -31,4 +31,3 @@ Open command menu.
 ![Alt text](https://i.imgur.com/e5E61PJ.png)
 
 Note that due to limitations of the 1.12 API, behind the scenes, some cases is missing.<br/>
-

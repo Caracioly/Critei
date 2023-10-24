@@ -3,7 +3,7 @@
 ## Notes: Crit Notifier
 ## Author: andre
 ## Version: 1.0.2
-## SavedVariablesPerCharacter: HIGHEST_CRIT, HIGHEST_HEAL, critSound, LANGUAGE
+## SavedVariablesPerCharacter: HIGHEST_CRIT, HIGHEST_HEAL, HIGHEST_DEF , critSound, LANGUAGE
 
 Critei.lua
 Localization.lua

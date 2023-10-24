@@ -2,7 +2,8 @@
 ## Title: Critei
 ## Notes: Crit Notifier
 ## Author: andre
-## Version: 1.0.1
+## Version: 1.0.2
 ## SavedVariablesPerCharacter: HIGHEST_CRIT, HIGHEST_HEAL, critSound, LANGUAGE
 
 Critei.lua
+Localization.lua

@@ -6,5 +6,6 @@
 ## SavedVariablesPerCharacter: HIGHEST_CRIT, HIGHEST_HEAL, HIGHEST_DEF , critSound, LANGUAGE
 
 Critei.lua
+CriteiTest.lua
 Colors.lua
-Localization.lua
+Localizations\Localization.lua

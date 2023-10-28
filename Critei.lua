@@ -26,6 +26,18 @@ CritNotifier:RegisterEvent('ADDON_LOADED')
 --     end
 -- end
 
+function changeCritSound(type, sound)
+    if type == "defSound" then
+        CRITEI_CONFIG.defSound = sound
+    elseif type == "healSound" then
+        CRITEI_CONFIG.healSound = sound
+    elseif type == "dmgSound" then
+        CRITEI_CONFIG.dmgSound = sound
+    else
+        print("That sound don't exist.")
+    end
+end
+
 function AddInstanceToRecords(instance_name)
     local exists = false
     for _, instance in ipairs(CRITEI_CONFIG.exploredInstances) do
@@ -66,7 +78,7 @@ function SetInstanceRecord(stat, XcritDamage, XtargetName, XspellName)
             instanceName = "OverWorld"
         end
         if XcritDamage > INSTANCE_RECORDS[instanceName][stat].DAMAGE then
-            print(string.format(localization[CRITEI_CONFIG.language].recordBrokenINS, instanceName, stat))
+            print(string.format(localization[CRITEI_CONFIG.language].recordBrokenINS, instanceName))
             INSTANCE_RECORDS[instanceName][stat].DAMAGE = XcritDamage
             INSTANCE_RECORDS[instanceName][stat].TARGET_NAME = XtargetName
             INSTANCE_RECORDS[instanceName][stat].SPELL_NAME = XspellName
@@ -131,7 +143,7 @@ CritNotifier:SetScript("OnEvent", function()
             isYellOn = true,
             isSoundOn = true,
             language = "en-us",
-            criSound = "vineboom",
+            dmgSound = "vineboom",
             healSound = "whoa",
             defSound = "omg",
             exploredInstances = {
@@ -141,6 +153,18 @@ CritNotifier:SetScript("OnEvent", function()
 
     elseif event == "VARIABLES_LOADED" then
         -- CheckVariabletype()
+        CriteiConfig.SelectedCriticalDefSound = CRITEI_CONFIG.defSound
+        UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDefSound, CriteiConfig.criticalDefDropDown)
+
+        CriteiConfig.SelectedCriticalDmgSound = CRITEI_CONFIG.dmgSound
+        UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDmgSound, CriteiConfig.criticalDmgDropDown)
+
+        CriteiConfig.SelectedCriticalHealSound = CRITEI_CONFIG.healSound
+        UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalHealSound, CriteiConfig.criticalHealDropDown)
+
+        CriteiConfig.SelectedLanguage = CRITEI_CONFIG.language
+        UIDropDownMenu_SetText(CriteiConfig.SelectedLanguage, CriteiConfig.languageDropDown)
+
         UIDropDownMenu_Initialize(CriteiConfig.InstanceDropDown, InitializeInstanceDropDown)
         UIDropDownMenu_Initialize(CriteiConfig.languageDropDown, InitializeLanguageDropDown)
         UIDropDownMenu_Initialize(CriteiConfig.criticalDmgDropDown, InitializeCriticalDmgDropDown)
@@ -184,7 +208,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_CRIT", critDamage, targetName, spellName)
 
             if next(HIGHEST_CRIT) == nil or critDamage > HIGHEST_CRIT.DAMAGE then
-                PlaySound("crit")
+                PlaySound(CriteiConfig.SelectedCriticalDmgSound)
                 SetHihgestStat(HIGHEST_CRIT, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].autoAndSpellSCrit, critDamage,
                     spellName))
@@ -207,7 +231,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_HEAL", critDamage, targetName, spellName)
 
             if next(HIGHEST_HEAL) == nil or critDamage > HIGHEST_HEAL.DAMAGE then
-                PlaySound("heal")
+                PlaySound(CriteiConfig.SelectedCriticalHealSound)
                 SetHihgestStat(HIGHEST_HEAL, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].healingSpellCrit, critDamage,
                     spellName))
@@ -230,7 +254,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_CRIT", critDamage, targetName, spellName)
 
             if next(HIGHEST_CRIT) == nil or critDamage > HIGHEST_CRIT.DAMAGE then
-                PlaySound("crit")
+                PlaySound(CriteiConfig.SelectedCriticalDmgSound)
                 SetHihgestStat(HIGHEST_CRIT, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].autoAndSpellSCrit, critDamage,
                     spellName))
@@ -251,7 +275,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_DEF", critDamage, targetName, spellName)
 
             if next(HIGHEST_DEF) == nil or critDamage > HIGHEST_DEF.DAMAGE then
-                PlaySound("def")
+                PlaySound(CriteiConfig.SelectedCriticalDefSound)
                 SetHihgestStat(HIGHEST_DEF, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].defAutoCrit, critDamage, spellName))
             end
@@ -276,7 +300,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_DEF", critDamage, targetName, spellName)
 
             if next(HIGHEST_DEF) == nil or critDamage > HIGHEST_DEF.DAMAGE then
-                PlaySound("def")
+                PlaySound(CriteiConfig.SelectedCriticalDefSound)
                 SetHihgestStat(HIGHEST_DEF, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].defSpellCrit, critDamage, spellName))
             end

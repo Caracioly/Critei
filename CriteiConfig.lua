@@ -43,8 +43,7 @@ criticalDefDropDown:SetPoint("BOTTOMLEFT", 15, 215) -- text
 
 CriteiConfig.criticalDefDropDown = CreateFrame("Frame", "criticalDefDropDown", CriteiConfig, "UIDropDownMenuTemplate") -- Corrigido o nome aqui
 CriteiConfig.criticalDefDropDown:SetPoint("BOTTOMRIGHT", -120, 205) -- Corrigido o nome aqui
-CriteiConfig.SelectedCriticalDefSound = "omg"
-UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDefSound, CriteiConfig.criticalDefDropDown) -- Corrigido o nome aqui
+
 
 -- critical heal dropdown--
 local criticalHealDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -53,8 +52,7 @@ criticalHealDropDown:SetPoint("BOTTOMLEFT", 15, 190) -- text
 
 CriteiConfig.criticalHealDropDown = CreateFrame("Frame", "criticalHealDropDown", CriteiConfig, "UIDropDownMenuTemplate")
 CriteiConfig.criticalHealDropDown:SetPoint("BOTTOMRIGHT", -120, 180)
-CriteiConfig.SelectedCriticalHealSound = "whoa"
-UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalHealSound, CriteiConfig.criticalHealDropDown)
+
 
 -- critical damage dropdown -------
 local criticalDmgDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -63,8 +61,7 @@ criticalDmgDropDown:SetPoint("BOTTOMLEFT", 15, 165) -- text
 
 CriteiConfig.criticalDmgDropDown = CreateFrame("Frame", "criticalDmgDropDown", CriteiConfig, "UIDropDownMenuTemplate")
 CriteiConfig.criticalDmgDropDown:SetPoint("BOTTOMRIGHT", -120, 155)
-CriteiConfig.SelectedCriticalDmgSound = "vineboom"
-UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDmgSound, CriteiConfig.criticalDmgDropDown)
+
 
 -----Language DropDown----
 local languageDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -73,8 +70,7 @@ languageDropDown:SetPoint("BOTTOMLEFT", 15, 140) -- text
 
 CriteiConfig.languageDropDown = CreateFrame("Frame", "languageDropDown", CriteiConfig, "UIDropDownMenuTemplate")
 CriteiConfig.languageDropDown:SetPoint("BOTTOMRIGHT", -120, 130) -- dropdown
-CriteiConfig.SelectedLanguage = "en-us"
-UIDropDownMenu_SetText(CriteiConfig.SelectedLanguage, CriteiConfig.languageDropDown)
+
 
 -----Instance DropDown----
 local instanceDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -93,7 +89,6 @@ separatorLineBOTTOM:SetWidth(270)
 separatorLineBOTTOM:SetHeight(2)
 separatorLineBOTTOM:SetPoint("BOTTOM", 0, 90)
 
-------- Clear Check-box ------
 ------- Clear Check-box ------
 local clearCheckBoxTitle = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 clearCheckBoxTitle:SetText("Crit Reset on Instance Entry")
@@ -204,7 +199,7 @@ function InitializeCriticalDmgDropDown(self, level)
             CriteiConfig.SelectedCriticalDmgSound = currentSound
             UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDmgSound, CriteiConfig.criticalDmgDropDown)
             PlaySound(CriteiConfig.SelectedCriticalDmgSound)
-            print(CriteiConfig.SelectedCriticalDmgSound)
+            changeCritSound("dmgSound",CriteiConfig.SelectedCriticalDmgSound)
         end
         UIDropDownMenu_AddButton(info, level)
     end
@@ -221,7 +216,7 @@ function InitializeCriticalHealDropDown(self, level)
             CriteiConfig.SelectedCriticalHealSound = currentSound
             UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalHealSound, CriteiConfig.criticalHealDropDown)
             PlaySound(CriteiConfig.SelectedCriticalHealSound)
-            print(CriteiConfig.SelectedCriticalHealSound)
+            changeCritSound("healSound",CriteiConfig.SelectedCriticalHealSound)
         end
         UIDropDownMenu_AddButton(info, level)
     end
@@ -238,7 +233,7 @@ function InitializeCriticalDefDropDown(self, level)
             CriteiConfig.SelectedCriticalDefSound = currentSound
             UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDefSound, CriteiConfig.criticalDefDropDown)
             PlaySound(CriteiConfig.SelectedCriticalDefSound)
-            print(CriteiConfig.SelectedCriticalDefSound)
+            changeCritSound("defSound" ,CriteiConfig.SelectedCriticalDefSound)
         end
         UIDropDownMenu_AddButton(info, level)
     end

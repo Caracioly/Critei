@@ -36,6 +36,16 @@ CriteiConfig.CloseButton:SetScript("OnClick", function()
     CriteiConfig:Hide()
 end)
 
+-- critical dropdown -------
+local criticalDmgDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+criticalDmgDropDown:SetText("Cri Damage SFX:")
+criticalDmgDropDown:SetPoint("BOTTOMLEFT", 15, 165) -- text
+
+CriteiConfig.criticalDmgDropDown = CreateFrame("Frame", "criticalDmgDropDown", CriteiConfig, "UIDropDownMenuTemplate")
+CriteiConfig.criticalDmgDropDown:SetPoint("BOTTOMRIGHT", -120, 155)
+CriteiConfig.SelectedCriticalDmgSound = "vineboom"
+UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDmgSound, CriteiConfig.criticalDmgDropDown)
+
 -----Language DropDown----
 local languageDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 languageDropDown:SetText("Language:")
@@ -46,7 +56,6 @@ CriteiConfig.languageDropDown:SetPoint("BOTTOMRIGHT", -120, 130) -- dropdown
 CriteiConfig.SelectedLanguage = "en-us"
 UIDropDownMenu_SetText(CriteiConfig.SelectedLanguage, CriteiConfig.languageDropDown)
 
-
 -----Instance DropDown----
 local instanceDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 instanceDropDown:SetText("Select a Instance:")
@@ -56,8 +65,6 @@ CriteiConfig.InstanceDropDown = CreateFrame("Frame", "InstanceDropDown", CriteiC
 CriteiConfig.InstanceDropDown:SetPoint("BOTTOMRIGHT", -120, 105) -- dropdown
 CriteiConfig.SelectedInstance = "OverWorld"
 UIDropDownMenu_SetText(CriteiConfig.SelectedInstance, CriteiConfig.InstanceDropDown)
-
-
 
 -----------------------------------LINE SEPARATOR--------------------------------------------------
 local separatorLineBOTTOM = CriteiConfig:CreateTexture(nil, "BACKGROUND")
@@ -90,30 +97,31 @@ CriteiConfig.CheckBox = CreateFrame("CheckButton", "CritSoundCheckBox", CriteiCo
 CriteiConfig.CheckBox:SetPoint("BOTTOMRIGHT", -30, 10) -- checkbox
 
 --------------- BOTTOM ------------------------------
+-- DROPDOWN SOUND
 
 -- DROPDOWN LANGUAGE function
-local languageList = {"en-us", "pt-br"}
-
-function InitializeLanguageDropDown(self, level)
-    local info = UIDropDownMenu_CreateInfo()
-
-    for _, language in pairs(languageList) do
-        local currentLanguage = language
-        info.text = currentLanguage
-        info.value = currentLanguage
-        info.func = function()
-            CriteiConfig.SelectedLanguage = currentLanguage
-            UIDropDownMenu_SetText(CriteiConfig.SelectedLanguage, CriteiConfig.languageDropDown)
-            changeLanguage(CriteiConfig.SelectedLanguage)
+    local languageList = {"en-us", "pt-br"}
+    
+    function InitializeLanguageDropDown(self, level)
+        local info = UIDropDownMenu_CreateInfo()
+        
+        for _, language in pairs(languageList) do
+            local currentLanguage = language
+            info.text = currentLanguage
+            info.value = currentLanguage
+            info.func = function()
+                CriteiConfig.SelectedLanguage = currentLanguage
+                UIDropDownMenu_SetText(CriteiConfig.SelectedLanguage, CriteiConfig.languageDropDown)
+                changeLanguage(CriteiConfig.SelectedLanguage)
+            end
+            UIDropDownMenu_AddButton(info, level)
         end
-        UIDropDownMenu_AddButton(info, level)
     end
-end
--- DROPDOWN INSTANCE function
+    -- DROPDOWN INSTANCE function
 
 function InitializeInstanceDropDown(self, level)
     local info = UIDropDownMenu_CreateInfo()
-
+    
     for _, instanceName in pairs(CRITEI_CONFIG.exploredInstances) do
         local currentInstanceName = instanceName
         info.text = currentInstanceName
@@ -127,6 +135,25 @@ function InitializeInstanceDropDown(self, level)
     end
 end
 
+-- Function to initialize sound dropdowns
+local soundList = {"-999", "bonk", "minecraft", "omg", "oof", "taco", "vineboom", "weLive", "whoa"}
+
+function InitializeCriticalDmgDropdown(self, level)
+    local info = UIDropDownMenu_CreateInfo()
+
+    for _, sound in pairs(soundList) do
+        local currentSound = sound
+        info.text = currentSound
+        info.value = currentSound
+        info.func = function()
+            CriteiConfig.SelectedCriticalDmgSound = currentSound
+            UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDmgSound, CriteiConfig.criticalDmgDropDown)
+            PlaySound(CriteiConfig.SelectedCriticalDmgSound)
+            print(CriteiConfig.SelectedCriticalDmgSound)
+        end
+        UIDropDownMenu_AddButton(info, level)
+    end
+end
 
 -- Adicione um print fora do script do evento para verificar.
 -- CriteiConfig:Hide() 

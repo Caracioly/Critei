@@ -74,9 +74,9 @@ function SetInstanceRecord(stat, XcritDamage, XtargetName, XspellName)
 end
 
 function PlaySound(sound)
-    if critSound then
-        PlaySoundFile("Interface\\AddOns\\Critei\\SFX\\" .. sound .. "SFX.ogg")
-    end
+    --if critSound then
+        PlaySoundFile("Interface\\AddOns\\Critei\\SFX\\" .. sound .. ".ogg")
+    --end
 end
 
 local function ClearAllRecords()
@@ -141,6 +141,7 @@ CritNotifier:SetScript("OnEvent", function()
         CheckVariabletype()
         UIDropDownMenu_Initialize(CriteiConfig.InstanceDropDown, InitializeInstanceDropDown)
         UIDropDownMenu_Initialize(CriteiConfig.languageDropDown, InitializeLanguageDropDown)
+        UIDropDownMenu_Initialize(CriteiConfig.criticalDmgDropDown, InitializeCriticalDmgDropdown)
 
     elseif event == 'ZONE_CHANGED_NEW_AREA' then
         local inInstance, instanceType = IsInInstance()

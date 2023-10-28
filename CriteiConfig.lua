@@ -36,7 +36,27 @@ CriteiConfig.CloseButton:SetScript("OnClick", function()
     CriteiConfig:Hide()
 end)
 
--- critical dropdown -------
+-- critical def dropdown--
+local criticalDefDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+criticalDefDropDown:SetText("Crit Def SFX:")
+criticalDefDropDown:SetPoint("BOTTOMLEFT", 15, 215) -- text
+
+CriteiConfig.criticalDefDropDown = CreateFrame("Frame", "criticalDefDropDown", CriteiConfig, "UIDropDownMenuTemplate") -- Corrigido o nome aqui
+CriteiConfig.criticalDefDropDown:SetPoint("BOTTOMRIGHT", -120, 205) -- Corrigido o nome aqui
+CriteiConfig.SelectedCriticalDefSound = "omg"
+UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDefSound, CriteiConfig.criticalDefDropDown) -- Corrigido o nome aqui
+
+-- critical heal dropdown--
+local criticalHealDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+criticalHealDropDown:SetText("Crit Heal SFX:")
+criticalHealDropDown:SetPoint("BOTTOMLEFT", 15, 190) -- text
+
+CriteiConfig.criticalHealDropDown = CreateFrame("Frame", "criticalHealDropDown", CriteiConfig, "UIDropDownMenuTemplate")
+CriteiConfig.criticalHealDropDown:SetPoint("BOTTOMRIGHT", -120, 180)
+CriteiConfig.SelectedCriticalHealSound = "whoa"
+UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalHealSound, CriteiConfig.criticalHealDropDown)
+
+-- critical damage dropdown -------
 local criticalDmgDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 criticalDmgDropDown:SetText("Cri Damage SFX:")
 criticalDmgDropDown:SetPoint("BOTTOMLEFT", 15, 165) -- text
@@ -100,28 +120,28 @@ CriteiConfig.CheckBox:SetPoint("BOTTOMRIGHT", -30, 10) -- checkbox
 -- DROPDOWN SOUND
 
 -- DROPDOWN LANGUAGE function
-    local languageList = {"en-us", "pt-br"}
-    
-    function InitializeLanguageDropDown(self, level)
-        local info = UIDropDownMenu_CreateInfo()
-        
-        for _, language in pairs(languageList) do
-            local currentLanguage = language
-            info.text = currentLanguage
-            info.value = currentLanguage
-            info.func = function()
-                CriteiConfig.SelectedLanguage = currentLanguage
-                UIDropDownMenu_SetText(CriteiConfig.SelectedLanguage, CriteiConfig.languageDropDown)
-                changeLanguage(CriteiConfig.SelectedLanguage)
-            end
-            UIDropDownMenu_AddButton(info, level)
+local languageList = {"en-us", "pt-br"}
+
+function InitializeLanguageDropDown(self, level)
+    local info = UIDropDownMenu_CreateInfo()
+
+    for _, language in pairs(languageList) do
+        local currentLanguage = language
+        info.text = currentLanguage
+        info.value = currentLanguage
+        info.func = function()
+            CriteiConfig.SelectedLanguage = currentLanguage
+            UIDropDownMenu_SetText(CriteiConfig.SelectedLanguage, CriteiConfig.languageDropDown)
+            changeLanguage(CriteiConfig.SelectedLanguage)
         end
+        UIDropDownMenu_AddButton(info, level)
     end
-    -- DROPDOWN INSTANCE function
+end
+-- DROPDOWN INSTANCE function
 
 function InitializeInstanceDropDown(self, level)
     local info = UIDropDownMenu_CreateInfo()
-    
+
     for _, instanceName in pairs(CRITEI_CONFIG.exploredInstances) do
         local currentInstanceName = instanceName
         info.text = currentInstanceName
@@ -138,7 +158,7 @@ end
 -- Function to initialize sound dropdowns
 local soundList = {"-999", "bonk", "minecraft", "omg", "oof", "taco", "vineboom", "weLive", "whoa"}
 
-function InitializeCriticalDmgDropdown(self, level)
+function InitializeCriticalDmgDropDown(self, level)
     local info = UIDropDownMenu_CreateInfo()
 
     for _, sound in pairs(soundList) do
@@ -150,6 +170,40 @@ function InitializeCriticalDmgDropdown(self, level)
             UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDmgSound, CriteiConfig.criticalDmgDropDown)
             PlaySound(CriteiConfig.SelectedCriticalDmgSound)
             print(CriteiConfig.SelectedCriticalDmgSound)
+        end
+        UIDropDownMenu_AddButton(info, level)
+    end
+end
+
+function InitializeCriticalHealDropDown(self, level)
+    local info = UIDropDownMenu_CreateInfo()
+
+    for _, sound in pairs(soundList) do
+        local currentSound = sound
+        info.text = currentSound
+        info.value = currentSound
+        info.func = function()
+            CriteiConfig.SelectedCriticalHealSound = currentSound
+            UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalHealSound, CriteiConfig.criticalHealDropDown)
+            PlaySound(CriteiConfig.SelectedCriticalHealSound)
+            print(CriteiConfig.SelectedCriticalHealSound)
+        end
+        UIDropDownMenu_AddButton(info, level)
+    end
+end
+
+function InitializeCriticalDefDropDown(self, level)
+    local info = UIDropDownMenu_CreateInfo()
+
+    for _, sound in pairs(soundList) do
+        local currentSound = sound
+        info.text = currentSound
+        info.value = currentSound
+        info.func = function()
+            CriteiConfig.SelectedCriticalDefSound = currentSound
+            UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDefSound, CriteiConfig.criticalDefDropDown)
+            PlaySound(CriteiConfig.SelectedCriticalDefSound)
+            print(CriteiConfig.SelectedCriticalDefSound)
         end
         UIDropDownMenu_AddButton(info, level)
     end

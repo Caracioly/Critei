@@ -13,17 +13,18 @@ CritNotifier:RegisterEvent('CHAT_MSG_YELL')
 CritNotifier:RegisterEvent('ADDON_LOADED')
 
 ------------------FUNCTIONS------------------
-function CheckVariabletype()
-    if type(HIGHEST_CRIT) == "number" then
-        HIGHEST_CRIT = {}
-    end
-    if type(HIGHEST_HEAL) == "number" then
-        HIGHEST_HEAL = {}
-    end
-    if type(HIGHEST_DEF) == "number" then
-        HIGHEST_DEF = {}
-    end
-end
+
+-- function CheckVariabletype()
+--     if type(HIGHEST_CRIT) == "number" then
+--         HIGHEST_CRIT = {}
+--     end
+--     if type(HIGHEST_HEAL) == "number" then
+--         HIGHEST_HEAL = {}
+--     end
+--     if type(HIGHEST_DEF) == "number" then
+--         HIGHEST_DEF = {}
+--     end
+-- end
 
 function AddInstanceToRecords(instance_name)
     local exists = false
@@ -74,17 +75,17 @@ function SetInstanceRecord(stat, XcritDamage, XtargetName, XspellName)
 end
 
 function PlaySound(sound)
-    --if critSound then
+    -- if critSound then
         PlaySoundFile("Interface\\AddOns\\Critei\\SFX\\" .. sound .. ".ogg")
-    --end
-end
-
-local function ClearAllRecords()
-    HIGHEST_CRIT = {}
-    HIGHEST_HEAL = {}
-    HIGHEST_DEF = {}
-    CheckVariabletype()
-end
+        -- end
+    end
+    
+    local function ClearAllRecords()
+        HIGHEST_CRIT = {}
+        HIGHEST_HEAL = {}
+        HIGHEST_DEF = {}
+        CheckVariabletype()
+    end
 
 function SetHihgestStat(stat, XcritDamage, XtargetName, XspellName)
     stat.DAMAGE = XcritDamage
@@ -132,7 +133,7 @@ CritNotifier:SetScript("OnEvent", function()
             healSound = "heal",
             defSound = "def",
             exploredInstances = {
-                [1] = "OverWorld",
+                [1] = "OverWorld"
             }
         }
         CRITEI_CONFIG.language = 'en-us'
@@ -141,21 +142,23 @@ CritNotifier:SetScript("OnEvent", function()
         CheckVariabletype()
         UIDropDownMenu_Initialize(CriteiConfig.InstanceDropDown, InitializeInstanceDropDown)
         UIDropDownMenu_Initialize(CriteiConfig.languageDropDown, InitializeLanguageDropDown)
-        UIDropDownMenu_Initialize(CriteiConfig.criticalDmgDropDown, InitializeCriticalDmgDropdown)
-
+        UIDropDownMenu_Initialize(CriteiConfig.criticalDmgDropDown, InitializeCriticalDmgDropDown)
+        UIDropDownMenu_Initialize(CriteiConfig.criticalHealDropDown, InitializeCriticalHealDropDown)
+        UIDropDownMenu_Initialize(CriteiConfig.criticalDefDropDown, InitializeCriticalDefDropDown)
+        
     elseif event == 'ZONE_CHANGED_NEW_AREA' then
         local inInstance, instanceType = IsInInstance()
         if inInstance and (instanceType == "party" or instanceType == "raid") then
             instance = instanceType == "party" and "Dungeon" or "Raid"
             local instanceName = GetZoneText()
-
+            
             AddInstanceToRecords(instanceName)
 
             print(string.format(localization[CRITEI_CONFIG.language].enteringInstance, instanceName))
 
             ClearAllRecords()
         end
-
+        
     elseif event == 'CHAT_MSG_SPELL_SELF_DAMAGE' then -- when a spell crit a enemy
         if string.find(arg1, "crit") then
 
@@ -164,25 +167,26 @@ CritNotifier:SetScript("OnEvent", function()
 
             local startSpellNameIndex, endSpellNameIndex = string.find(arg1, "Your "), string.find(arg1, "crit")
             spellName = string.sub(arg1, startSpellNameIndex + 5, endSpellNameIndex - 2)
-
+            
             local startDamageIndex = string.find(arg1, "for %d+")
             local _, endDamageIndex = string.find(arg1, "%d+", startDamageIndex)
             if not endDamageIndex then
                 endDamageIndex = string.find(arg1, "%.", startDamageIndex)
             end
             critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex)) -- GET DAMAGE AMOUNT
-
+            
             SetInstanceRecord("TOP_CRIT", critDamage, targetName, spellName)
 
             if next(HIGHEST_CRIT) == nil or critDamage > HIGHEST_CRIT.DAMAGE then
                 PlaySound("crit")
                 SetHihgestStat(HIGHEST_CRIT, critDamage, targetName, spellName)
-                SendYellMessage(string.format(localization[CRITEI_CONFIG.language].autoAndSpellSCrit, critDamage, spellName))
+                SendYellMessage(string.format(localization[CRITEI_CONFIG.language].autoAndSpellSCrit, critDamage,
+                    spellName))
+                end
             end
-        end
-
-        -- when a healing spell crit 
-    elseif event == 'CHAT_MSG_SPELL_SELF_BUFF' then
+            
+            -- when a healing spell crit 
+        elseif event == 'CHAT_MSG_SPELL_SELF_BUFF' then
         if string.find(arg1, "critically") then
 
             local startNameIndex, endNameIndex = string.find(arg1, "heals "), string.find(arg1, "for") -- GET TARGET NAME
@@ -190,88 +194,90 @@ CritNotifier:SetScript("OnEvent", function()
 
             local startIndex, endIndex = string.find(arg1, "Your "), string.find(arg1, "critically") -- GET SPELL NAME
             spellName = string.sub(arg1, startIndex + 5, endIndex - 2)
-
+            
             local startDamageIndex, endDamageIndex = string.find(arg1, "for "), string.find(arg1, "%.")
             critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex)) -- GET THE DAMAGE AMOUNT
-
+            
             SetInstanceRecord("TOP_HEAL", critDamage, targetName, spellName)
-
+            
             if next(HIGHEST_HEAL) == nil or critDamage > HIGHEST_HEAL.DAMAGE then
                 PlaySound("heal")
                 SetHihgestStat(HIGHEST_HEAL, critDamage, targetName, spellName)
-                SendYellMessage(string.format(localization[CRITEI_CONFIG.language].healingSpellCrit, critDamage, spellName))
-            end
+                SendYellMessage(string.format(localization[CRITEI_CONFIG.language].healingSpellCrit, critDamage,
+                    spellName))
+                end
         end
-
+        
         -- when an Auto Attack crit
     elseif event == 'CHAT_MSG_COMBAT_SELF_HITS' then
         if string.find(arg1, "crit") then
-
+            
             local startNameIndex, endNameIndex = string.find(arg1, "crit "), string.find(arg1, "for") -- GET TARGET NAME
             targetName = string.sub(arg1, startNameIndex + 5, endNameIndex - 2)
-
+            
             local startIndex, endIndex = string.find(arg1, "You "), string.find(arg1, "crit") -- SPELL NAME AUTO ATTACK
             spellName = localization[CRITEI_CONFIG.language].aa
-
+            
             local startDamageIndex, endDamageIndex = string.find(arg1, "for "), string.find(arg1, "%.")
             critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex)) -- GET DAMAGE
-
+            
             SetInstanceRecord("TOP_CRIT", critDamage, targetName, spellName)
-
+            
             if next(HIGHEST_CRIT) == nil or critDamage > HIGHEST_CRIT.DAMAGE then
                 PlaySound("crit")
                 SetHihgestStat(HIGHEST_CRIT, critDamage, targetName, spellName)
-                SendYellMessage(string.format(localization[CRITEI_CONFIG.language].autoAndSpellSCrit, critDamage, spellName))
+                SendYellMessage(string.format(localization[CRITEI_CONFIG.language].autoAndSpellSCrit, critDamage,
+                spellName))
             end
         end
-
+        
     elseif event == "CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS" then
         local endNameIndex = string.find(arg1, "crit")
         if endNameIndex then
             targetName = string.sub(arg1, 1, endNameIndex - 2) -- GET TARGET NAME
-
+            
             local startIndex, endIndex = string.find(arg1, "crits "), string.find(arg1, "you ") -- GET THE SPELL AUTO ATTACK
             spellName = localization[CRITEI_CONFIG.language].aa
-
+            
             local startDamageIndex, endDamageIndex = string.find(arg1, "for "), string.find(arg1, "%.") -- GET DAMAGE AMOUNT
             critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex))
-
+            
             SetInstanceRecord("TOP_DEF", critDamage, targetName, spellName)
-
+            
             if next(HIGHEST_DEF) == nil or critDamage > HIGHEST_DEF.DAMAGE then
                 PlaySound("def")
                 SetHihgestStat(HIGHEST_DEF, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].defAutoCrit, critDamage, spellName))
             end
         end
-
+        
     elseif event == "CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE" then
         local endNameIndex = string.find(arg1, "'s") -- and crits
         if endNameIndex and string.find(arg1, "crits") then
-
+            
             targetName = string.sub(arg1, 1, endNameIndex) -- GET TARGET NAME
 
             local startSpellNameIndex, endSpellNameIndex = string.find(arg1, "'s "), string.find(arg1, "crits") -- GET SPELL NAME
             spellName = string.sub(arg1, startSpellNameIndex + 3, endSpellNameIndex - 2)
-
+            
             local startDamageIndex = string.find(arg1, "for %d+")
             local _, endDamageIndex = string.find(arg1, "%d+", startDamageIndex)
             if not endDamageIndex then
                 endDamageIndex = string.find(arg1, "%.", startDamageIndex)
             end
             critDamage = tonumber(string.sub(arg1, startDamageIndex + 4, endDamageIndex)) -- GET DAMAGE
-
+            
             SetInstanceRecord("TOP_DEF", critDamage, targetName, spellName)
-
+            
             if next(HIGHEST_DEF) == nil or critDamage > HIGHEST_DEF.DAMAGE then
                 PlaySound("def")
                 SetHihgestStat(HIGHEST_DEF, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].defSpellCrit, critDamage, spellName))
             end
         end
-
+        
         -- when someone next to you crit
-    elseif event == 'CHAT_MSG_YELL' and arg2 ~= playerName then
+    elseif event == 'CHAT_MSG_YELL' and arg2 == playerName then
         -- todo resolver isso aqui direito com localization
         if string.find(arg1, "Critei") and string.find(arg1, "com") then
             PlaySound("crit")
@@ -353,6 +359,7 @@ CritNotifier:SetScript("OnEvent", function()
     SLASH_CRESET2 = "/cc"
     SlashCmdList["CRESET"] = function()
         print(localization[CRITEI_CONFIG.language].resetMessage)
+        SendChatMessage("o", "YELL", nil, nil, nil, nil, 0, 1, 0)
         ClearAllRecords()
     end
 

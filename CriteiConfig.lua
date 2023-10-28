@@ -103,7 +103,7 @@ function InitializeLanguageDropDown(self, level)
         info.value = currentLanguage
         info.func = function()
             CriteiConfig.SelectedLanguage = currentLanguage
-            UIDropDownMenu_SetText(CriteiConfig.languageDropDown, currentLanguage)
+            UIDropDownMenu_SetText(CriteiConfig.SelectedLanguage, CriteiConfig.languageDropDown)
             changeLanguage(CriteiConfig.SelectedLanguage)
         end
         UIDropDownMenu_AddButton(info, level)

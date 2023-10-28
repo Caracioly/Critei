@@ -93,31 +93,66 @@ separatorLineBOTTOM:SetWidth(270)
 separatorLineBOTTOM:SetHeight(2)
 separatorLineBOTTOM:SetPoint("BOTTOM", 0, 90)
 
-------- Clear Check-box------
+------- Clear Check-box ------
+------- Clear Check-box ------
 local clearCheckBoxTitle = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 clearCheckBoxTitle:SetText("Crit Reset on Instance Entry")
 clearCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 70) -- text
 
-CriteiConfig.CheckBox = CreateFrame("CheckButton", "ClearCheckBox", CriteiConfig, "UICheckButtonTemplate")
-CriteiConfig.CheckBox:SetPoint("BOTTOMRIGHT", -30, 60) -- checkbox
+CriteiConfig.ClearCheckbox = CreateFrame("CheckButton", "ClearCheckBox", CriteiConfig, "UICheckButtonTemplate")
+CriteiConfig.ClearCheckbox:SetPoint("BOTTOMRIGHT", -30, 60) -- checkbox
 
----------Yell Check-box--------
-local yelldCheckBoxTitle = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-yelldCheckBoxTitle:SetText("Yell Message on Crit")
-yelldCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 45) -- text
+--------- Yell Check-box --------
+local yellCheckBoxTitle = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+yellCheckBoxTitle:SetText("Yell Message on Crit")
+yellCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 45) -- text
 
-CriteiConfig.CheckBox = CreateFrame("CheckButton", "YellCheckBox", CriteiConfig, "UICheckButtonTemplate")
-CriteiConfig.CheckBox:SetPoint("BOTTOMRIGHT", -30, 35) -- checkbox 
--------- Sound Check-box-----------
+CriteiConfig.YellCheckbox = CreateFrame("CheckButton", "YellCheckBox", CriteiConfig, "UICheckButtonTemplate")
+CriteiConfig.YellCheckbox:SetPoint("BOTTOMRIGHT", -30, 35) -- checkbox
+
+-------- Sound Check-box --------
 local soundCheckBoxTitle = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 soundCheckBoxTitle:SetText("Play Sound on Crit")
 soundCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 20) -- text
 
-CriteiConfig.CheckBox = CreateFrame("CheckButton", "CritSoundCheckBox", CriteiConfig, "UICheckButtonTemplate")
-CriteiConfig.CheckBox:SetPoint("BOTTOMRIGHT", -30, 10) -- checkbox
+CriteiConfig.CritSoundCheckbox = CreateFrame("CheckButton", "CritSoundCheckBox", CriteiConfig, "UICheckButtonTemplate")
+CriteiConfig.CritSoundCheckbox:SetPoint("BOTTOMRIGHT", -30, 10) -- checkbox
 
---------------- BOTTOM ------------------------------
--- DROPDOWN SOUND
+--------------- BOTTOM --------------
+
+---------------------CHECKBOX----------------------------------
+
+function OnClearCheckboxChanged()
+    local isChecked = CriteiConfig.ClearCheckbox:GetChecked()
+    if isChecked then
+        CRITEI_CONFIG.isClearOn = true
+    else
+        CRITEI_CONFIG.isClearOn = false
+    end
+end
+
+function OnYellCheckboxChanged()
+    local isChecked = CriteiConfig.YellCheckbox:GetChecked()
+    if isChecked then
+        CRITEI_CONFIG.isYellOn = true
+    else
+        CRITEI_CONFIG.isYellOn = false
+    end
+end
+
+function OnSoundCheckboxChanged()
+    local isChecked = CriteiConfig.CritSoundCheckbox:GetChecked()
+    if isChecked then
+        CRITEI_CONFIG.isSoundOn = true
+    else
+        CRITEI_CONFIG.isSoundOn = false
+    end
+end
+
+CriteiConfig.ClearCheckbox:SetScript("OnClick", OnClearCheckboxChanged)
+CriteiConfig.YellCheckbox:SetScript("OnClick", OnYellCheckboxChanged)
+CriteiConfig.CritSoundCheckbox:SetScript("OnClick", OnSoundCheckboxChanged)
+-------------------------------------------------------------------------------
 
 -- DROPDOWN LANGUAGE function
 local languageList = {"en-us", "pt-br"}
@@ -208,6 +243,8 @@ function InitializeCriticalDefDropDown(self, level)
         UIDropDownMenu_AddButton(info, level)
     end
 end
+----------------------------------------------------------------------------------
+
 
 -- Adicione um print fora do script do evento para verificar.
 -- CriteiConfig:Hide() 

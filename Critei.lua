@@ -14,18 +14,6 @@ CritNotifier:RegisterEvent('ADDON_LOADED')
 
 ------------------FUNCTIONS------------------
 
--- function CheckVariabletype()
---     if type(HIGHEST_CRIT) == "number" then
---         HIGHEST_CRIT = {}
---     end
---     if type(HIGHEST_HEAL) == "number" then
---         HIGHEST_HEAL = {}
---     end
---     if type(HIGHEST_DEF) == "number" then
---         HIGHEST_DEF = {}
---     end
--- end
-
 function changeCritSound(type, sound)
     if type == "defSound" then
         CRITEI_CONFIG.defSound = sound
@@ -96,7 +84,6 @@ local function ClearAllRecords()
     HIGHEST_CRIT = {}
     HIGHEST_HEAL = {}
     HIGHEST_DEF = {}
-    -- CheckVariabletype()
 end
 
 function SetHihgestStat(stat, XcritDamage, XtargetName, XspellName)
@@ -175,7 +162,9 @@ CritNotifier:SetScript("OnEvent", function()
         CriteiConfig.YellCheckbox:SetChecked(CRITEI_CONFIG.isYellOn)
         CriteiConfig.CritSoundCheckbox:SetChecked(CRITEI_CONFIG.isSoundOn)
 
-        instanceName:SetText(string.format("%s", CriteiConfig.SelectedInstance))
+        instanceNameText:SetText(string.format("%s", CriteiConfig.SelectedInstance))
+
+        showCritData("OverWorld")
 
     elseif event == 'ZONE_CHANGED_NEW_AREA' then
         local inInstance, instanceType = IsInInstance()
@@ -309,7 +298,7 @@ CritNotifier:SetScript("OnEvent", function()
         end
 
         -- when someone next to you crit
-    elseif event == 'CHAT_MSG_YELL' and arg2 == playerName then
+    elseif event == 'CHAT_MSG_YELL' and arg2 ~= playerName then
         -- todo resolver isso aqui direito com localization
         if string.find(arg1, "Critei") and string.find(arg1, "com") then
             PlaySound("crit")
@@ -326,71 +315,19 @@ CritNotifier:SetScript("OnEvent", function()
         end
     end
 
-    -- COMMANDS --
-    -- TODO COMANDS PARA O DEF
-    -- Slash command to check your crit record
-    SLASH_CRIT1 = '/top'
-    SLASH_CRIT2 = '/t'
-    SlashCmdList["CRIT"] = function(msg)
-        if msg == "crit" then
-            if next(HIGHEST_CRIT) == nil then
-                print(localization[CRITEI_CONFIG.language].emptyData)
-            else
-                print(string.format(localization[CRITEI_CONFIG.language].critMessage, HIGHEST_CRIT.DAMAGE))
-            end
-        elseif msg == "heal" then
-            if next(HIGHEST_HEAL) == nil then
-                print(localization[CRITEI_CONFIG.language].emptyData)
-            else
-                print(string.format(localization[CRITEI_CONFIG.language].healMessage, HIGHEST_HEAL.DAMAGE))
-            end
-        elseif msg == "def" then
-            if next(HIGHEST_DEF) == nil then
-                print(localization[CRITEI_CONFIG.language].emptyData)
-            else
-                print(string.format(localization[CRITEI_CONFIG.language].defMessage, HIGHEST_DEF.DAMAGE))
-            end
-        end
-    end
     -- change language 
     function changeLanguage(languageToChange)
         CRITEI_CONFIG.language = languageToChange
         CRITEI_CONFIG.language = CRITEI_CONFIG.language
     end
 
-    -- help command
-    SLASH_CHLP1 = "/crithelp"
-    SLASH_CHLP2 = "/chelp"
-    SLASH_CHLP3 = "/ch"
-    SlashCmdList["CHLP"] = function()
-        print(localization[CRITEI_CONFIG.language].commandList)
-        print(localization[CRITEI_CONFIG.language].topcrit)
-        print(localization[CRITEI_CONFIG.language].topheal)
-        print(localization[CRITEI_CONFIG.language].topdef)
-        print(localization[CRITEI_CONFIG.language].critSoundCommand)
-        print(localization[CRITEI_CONFIG.language].critLanguage)
-        print(localization[CRITEI_CONFIG.language].critHelp)
-        print("------------------------------")
-    end
-
-    -- debug reset crit values
+    -- COMMANDS --
+    -- reset crit values
     SLASH_CRESET1 = "/critclear"
     SLASH_CRESET2 = "/cc"
     SlashCmdList["CRESET"] = function()
         print(localization[CRITEI_CONFIG.language].resetMessage)
         ClearAllRecords()
-    end
-
-    -- PRINT TABLES --
-    SLASH_CTT1 = "/crit"
-    SlashCmdList["CTT"] = function(msg)
-        if msg == "heal" then
-            HealTableTest()
-        elseif msg == "def" then
-            DefTableTest()
-        elseif msg == "crit" then
-            CritTableTest()
-        end
     end
 
     SLASH_CRITEI1 = "/critei"

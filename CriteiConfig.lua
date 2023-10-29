@@ -5,9 +5,20 @@ CriteiConfig:SetPoint("CENTER", 0, 60)
 CriteiConfig:SetMovable(true)
 CriteiConfig:EnableMouse(true)
 CriteiConfig:RegisterForDrag("LeftButton")
-CriteiConfig:SetScript("OnDragStart", CriteiConfig.StartMoving)
-CriteiConfig:SetScript("OnDragStop", CriteiConfig.StopMovingOrSizing)
 tinsert(UISpecialFrames, CriteiConfig:GetName())
+CriteiConfig:SetScript("OnDragStart", function()
+    if not CriteiConfig.isMoving then
+        CriteiConfig:StartMoving()
+        CriteiConfig.isMoving = true
+    end
+end)
+
+CriteiConfig:SetScript("OnDragStop", function()
+    if CriteiConfig.isMoving then
+        CriteiConfig:StopMovingOrSizing()
+        CriteiConfig.isMoving = false
+    end
+end)
 
 CriteiConfig:SetBackdrop({
     bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -22,66 +33,146 @@ CriteiConfig:SetBackdrop({
         bottom = 4
     }
 })
-CriteiConfig:SetBackdropColor(0.2, 0.2, 0.2, 0.5)
+CriteiConfig:SetBackdropColor(0.2, 0.2, 0.2, 0.7)
 
-function doTheThing()
-    instanceName:SetText(string.format("%s", CriteiConfig.SelectedInstance))
+function showCritData(instance)
+    instanceNameText:SetText(string.format("%s", instance))
+    local instanceData = INSTANCE_RECORDS[instance]
+    if instanceData then
+        local spellCRITDamage = instanceData.TOP_CRIT and instanceData.TOP_CRIT.DAMAGE or "Empty"
+        local targeCRITtName = instanceData.TOP_CRIT and instanceData.TOP_CRIT.TARGET_NAME or "Empty"
+        local spellCRITName = instanceData.TOP_CRIT and instanceData.TOP_CRIT.SPELL_NAME or "Empty"
+        highestCritDamage:SetText(string.format("[Damage Amount]|cffffffff %s", spellCRITDamage))
+        highestCritTarget:SetText(string.format("[Target Name]|cffffffff %s", targeCRITtName))
+        highestCritSpell:SetText(string.format("[Spell Name]|cffffffff %s ", spellCRITName))
+    else
+        highestCritDamage:SetText("[Damage Amount]|cffffffff Empty")
+        highestCritTarget:SetText("[Target Name]|cffffffff Empty")
+        highestCritSpell:SetText("[Spell Name]|cffffffff Empty")
+    end
+    if instanceData then
+        local spellHEALDamage = instanceData.TOP_HEAL and instanceData.TOP_HEAL.DAMAGE or "Empty"
+        local targetHEALName = instanceData.TOP_HEAL and instanceData.TOP_HEAL.TARGET_NAME or "Empty"
+        local spellHEALName = instanceData.TOP_HEAL and instanceData.TOP_HEAL.SPELL_NAME or "Empty"
+        highestHealDamage:SetText(string.format("[Heal Amount]|cffffffff %s.", spellHEALDamage))
+        highestHealTarget:SetText(string.format("[Target Name]|cffffffff %s.", targetHEALName))
+        highestHealSpell:SetText(string.format("[Spell Name]|cffffffff %s.", spellHEALName))
+    else
+        highestHealDamage:SetText("[Damage Amount]|cffffffff Empty.")
+        highestHealTarget:SetText("[Target Name]|cffffffff Empty.")
+        highestHealSpell:SetText("[Spell Name]|cffffffff Empty.")
+    end
+    if instanceData then
+        local spellDEFDamage = instanceData.TOP_DEF and instanceData.TOP_DEF.DAMAGE or "Empty"
+        local targetDEFName = instanceData.TOP_DEF and instanceData.TOP_DEF.TARGET_NAME or "Empty"
+        local spellDEFName = instanceData.TOP_DEF and instanceData.TOP_DEF.SPELL_NAME or "Empty"
+        highestDefDamage:SetText(string.format("[Damage Taken Amount]|cffffffff %s.", spellDEFDamage))
+        highestDefTarget:SetText(string.format("[Source Name]|cffffffff %s.", targetDEFName))
+        highestDefSpell:SetText(string.format("[Spell Name]|cffffffff %s.", spellDEFName))
+    else
+        highestDefDamage:SetText("[Damage Taken Amount]|cffffffff Empty.")
+        highestDefTarget:SetText("[Source Name]|cffffffff Empty.")
+        highestDefSpell:SetText("[Spell Name]|cffffffff Empty.")
+    end
 end
 
 -- Title
 CriteiConfig.Title = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
-CriteiConfig.Title:SetText("Critei Config")
-CriteiConfig.Title:SetPoint("TOP", 0, -10)
+CriteiConfig.Title:SetText("Critei Config v1.2.0")
+CriteiConfig.Title:SetPoint("TOPLEFT", 10, -10)
+
 
 -- Close button
 CriteiConfig.CloseButton = CreateFrame("Button", nil, CriteiConfig, "UIPanelCloseButton")
-CriteiConfig.CloseButton:SetPoint("TOPRIGHT", -5, -5)
+CriteiConfig.CloseButton:SetPoint("TOPRIGHT", -5, -2)
 CriteiConfig.CloseButton:SetScript("OnClick", function()
     CriteiConfig:Hide()
 end)
 
-instanceName = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-instanceName:SetPoint("TOP", 0, -50) -- text
+local separatorLineTitle = CriteiConfig:CreateTexture(nil, "BACKGROUND")
+separatorLineTitle:SetTexture(1, 1, 1, 0.3)
+separatorLineTitle:SetWidth(270)
+separatorLineTitle:SetHeight(2)
+separatorLineTitle:SetPoint("TOP", 0, -30)
 -----------------------------------------------------------------------------------------------
+instanceNameText = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+instanceNameText:SetPoint("TOP", 0, -32) -- text
+
 highestCrit = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-highestCrit:SetPoint("TOPLEFT", 10, -65) -- text
-highestCrit:SetText("|cFFCD853FHighest Critical Damage|r")
+highestCrit:SetPoint("TOPLEFT", 10, -52) -- text
+highestCrit:SetText("|cFFCD853FHighest Critical Damage Amount:|r")
 -------------------------------------------------------
--- highestCritDamage = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
--- highestCritDamage:SetPoint("TOPLEFT", 10, -70) -- text
--- highestCritDamage:SetText(""..ORANGERED.."4654545"..END)
+highestCritSpell = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestCritSpell:SetPoint("TOPLEFT", 20, -65) -- text
+highestCritSpell:SetText("[Spell Name]|cffffffff Empty.")
 
--- highestCritHeal = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
--- highestCritHeal:SetPoint("TOPLEFT", 10, -80) -- text
--- highestCritHeal:SetText(GREENYELLOW.."Target: Defias maluco"..END)
+highestCritTarget = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestCritTarget:SetPoint("TOPLEFT", 20, -75) -- text
+highestCritTarget:SetText("[Target Name]|cffffffff Empty.")
 
--- highestCritDef = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
--- highestCritDef:SetPoint("TOPLEFT", 10, -90) -- text
--- highestCritDef:SetText(ROYALBLUE.."Frost nova"..END)
+highestCritDamage = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestCritDamage:SetPoint("TOPLEFT", 20, -85) -- text
+highestCritDamage:SetText("[Damage Amount]|cffffffff Empty.")
+--------------------------------------------------------
+
+local separatorLineHEAL = CriteiConfig:CreateTexture(nil, "BACKGROUND")
+separatorLineHEAL:SetTexture(1, 1, 1, 0.3)
+separatorLineHEAL:SetWidth(230)
+separatorLineHEAL:SetHeight(1)
+separatorLineHEAL:SetPoint("TOP", 0, -100)
 ---------------------------------------------------------------------------------------------
+highestHeal = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+highestHeal:SetPoint("TOPLEFT", 10, -103) -- text
+highestHeal:SetText("|cFFADFF2FHighest Critical Heal Amount:|r")
+-------------------------------------------------------
+highestHealSpell = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestHealSpell:SetPoint("TOPLEFT", 20, -115) -- text
+highestHealSpell:SetText("[Spell Name]|cffffffff Empty.")
 
+highestHealTarget = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestHealTarget:SetPoint("TOPLEFT", 20, -125) -- text
+highestHealTarget:SetText("[Target Name]|cffffffff Empty.")
 
--- -- Texto de Maior Cura Crítica
--- local healingText = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
--- healingText:SetText("Highest Critical Healing: Qual skill ele usou / em quem")
--- healingText:SetPoint("TOP", 0, -70)
--- healingText:SetTextColor(0, 1, 0) -- Cor verde
+highestHealDamage = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestHealDamage:SetPoint("TOPLEFT", 20, -135) -- text
+highestHealDamage:SetText("[Heal Amount]|cffffffff Empty.")
+------------------------------------------------------------------------------------------
+local separatorLineDEF = CriteiConfig:CreateTexture(nil, "BACKGROUND")
+separatorLineDEF:SetTexture(1, 1, 1, 0.3)
+separatorLineDEF:SetWidth(230)
+separatorLineDEF:SetHeight(1)
+separatorLineDEF:SetPoint("TOP", 0, -150)
+---------------------------------------------------------------------------------------------
+highestDef = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+highestDef:SetPoint("TOPLEFT", 10, -153) -- text
+highestDef:SetText("|cFF4169E1Highest Damage Taken Amount:|r")
+-------------------------------------------------------
+highestDefSpell = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestDefSpell:SetPoint("TOPLEFT", 20, -165) -- text
+highestDefSpell:SetText("[Spell Name]|cffffffff Empty.")
 
--- -- Texto de Maior Defesa Crítica
--- local defenseText = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
--- defenseText:SetText("Highest Critical Defense: Qual skill ele Tomou / Quem que foi")
--- defenseText:SetPoint("TOP", 0, -100)
--- defenseText:SetTextColor(0, 0, 1) -- Cor azul
+highestDefTarget = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestDefTarget:SetPoint("TOPLEFT", 20, -175) -- text
+highestDefTarget:SetText("[Source Name]|cffffffff Empty.")
 
+highestDefDamage = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+highestDefDamage:SetPoint("TOPLEFT", 20, -185) -- text
+highestDefDamage:SetText("[Taken Amount]|cffffffff Empty.")
+------------------------------------------------------------------------------------------
+local separatorLineFinal = CriteiConfig:CreateTexture(nil, "BACKGROUND")
+separatorLineFinal:SetTexture(1, 1, 1, 0.3)
+separatorLineFinal:SetWidth(270)
+separatorLineFinal:SetHeight(1)
+separatorLineFinal:SetPoint("TOP", 0, -205)
+---------------------------------------------------------------------------------------------
 
 -- critical def dropdown--
 local criticalDefDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 criticalDefDropDown:SetText("Crit Def SFX:")
-criticalDefDropDown:SetPoint("BOTTOMLEFT", 15, 215) -- text
+criticalDefDropDown:SetPoint("BOTTOMLEFT", 15, 140) -- text
 
 CriteiConfig.criticalDefDropDown = CreateFrame("Frame", "criticalDefDropDown", CriteiConfig, "UIDropDownMenuTemplate") -- Corrigido o nome aqui
-CriteiConfig.criticalDefDropDown:SetPoint("BOTTOMRIGHT", -120, 205) -- Corrigido o nome aqui
-
+CriteiConfig.criticalDefDropDown:SetPoint("BOTTOMRIGHT", -120, 130) -- Corrigido o nome aqui
 
 -- critical heal dropdown--
 local criticalHealDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -91,7 +182,6 @@ criticalHealDropDown:SetPoint("BOTTOMLEFT", 15, 190) -- text
 CriteiConfig.criticalHealDropDown = CreateFrame("Frame", "criticalHealDropDown", CriteiConfig, "UIDropDownMenuTemplate")
 CriteiConfig.criticalHealDropDown:SetPoint("BOTTOMRIGHT", -120, 180)
 
-
 -- critical damage dropdown -------
 local criticalDmgDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 criticalDmgDropDown:SetText("Cri Damage SFX:")
@@ -100,23 +190,21 @@ criticalDmgDropDown:SetPoint("BOTTOMLEFT", 15, 165) -- text
 CriteiConfig.criticalDmgDropDown = CreateFrame("Frame", "criticalDmgDropDown", CriteiConfig, "UIDropDownMenuTemplate")
 CriteiConfig.criticalDmgDropDown:SetPoint("BOTTOMRIGHT", -120, 155)
 
-
 -----Language DropDown----
 local languageDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 languageDropDown:SetText("Language:")
-languageDropDown:SetPoint("BOTTOMLEFT", 15, 140) -- text
+languageDropDown:SetPoint("BOTTOMLEFT", 15, 115) -- text
 
 CriteiConfig.languageDropDown = CreateFrame("Frame", "languageDropDown", CriteiConfig, "UIDropDownMenuTemplate")
-CriteiConfig.languageDropDown:SetPoint("BOTTOMRIGHT", -120, 130) -- dropdown
-
+CriteiConfig.languageDropDown:SetPoint("BOTTOMRIGHT", -120, 105) -- dropdown
 
 -----Instance DropDown----
 local instanceDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 instanceDropDown:SetText("Select a Instance:")
-instanceDropDown:SetPoint("BOTTOMLEFT", 15, 115) -- text
+instanceDropDown:SetPoint("BOTTOMLEFT", 15, 215) -- text
 
 CriteiConfig.InstanceDropDown = CreateFrame("Frame", "InstanceDropDown", CriteiConfig, "UIDropDownMenuTemplate")
-CriteiConfig.InstanceDropDown:SetPoint("BOTTOMRIGHT", -120, 105) -- dropdown
+CriteiConfig.InstanceDropDown:SetPoint("BOTTOMRIGHT", -120, 205) -- dropdown
 CriteiConfig.SelectedInstance = "OverWorld"
 UIDropDownMenu_SetText(CriteiConfig.SelectedInstance, CriteiConfig.InstanceDropDown)
 
@@ -217,15 +305,14 @@ function InitializeInstanceDropDown(self, level)
         info.func = function()
             CriteiConfig.SelectedInstance = currentInstanceName
             UIDropDownMenu_SetText(CriteiConfig.SelectedInstance, CriteiConfig.InstanceDropDown)
-            print(CriteiConfig.SelectedInstance)
-            doTheThing(CriteiConfig.SelectedInstance)
+            showCritData(CriteiConfig.SelectedInstance)
         end
         UIDropDownMenu_AddButton(info, level)
     end
 end
 
 -- Function to initialize sound dropdowns
-local soundList = {"-999", "bonk", "minecraft", "omg", "oof", "taco", "vineboom", "weLive", "whoa"}
+local soundList = {"-999", "auuu", "bonk", "minecraft", "omg", "oof", "taco", "vineboom", "weLive", "whoa"}
 
 function InitializeCriticalDmgDropDown(self, level)
     local info = UIDropDownMenu_CreateInfo()
@@ -238,7 +325,7 @@ function InitializeCriticalDmgDropDown(self, level)
             CriteiConfig.SelectedCriticalDmgSound = currentSound
             UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDmgSound, CriteiConfig.criticalDmgDropDown)
             PlaySound(CriteiConfig.SelectedCriticalDmgSound)
-            changeCritSound("dmgSound",CriteiConfig.SelectedCriticalDmgSound)
+            changeCritSound("dmgSound", CriteiConfig.SelectedCriticalDmgSound)
         end
         UIDropDownMenu_AddButton(info, level)
     end
@@ -255,7 +342,7 @@ function InitializeCriticalHealDropDown(self, level)
             CriteiConfig.SelectedCriticalHealSound = currentSound
             UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalHealSound, CriteiConfig.criticalHealDropDown)
             PlaySound(CriteiConfig.SelectedCriticalHealSound)
-            changeCritSound("healSound",CriteiConfig.SelectedCriticalHealSound)
+            changeCritSound("healSound", CriteiConfig.SelectedCriticalHealSound)
         end
         UIDropDownMenu_AddButton(info, level)
     end
@@ -272,30 +359,9 @@ function InitializeCriticalDefDropDown(self, level)
             CriteiConfig.SelectedCriticalDefSound = currentSound
             UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDefSound, CriteiConfig.criticalDefDropDown)
             PlaySound(CriteiConfig.SelectedCriticalDefSound)
-            changeCritSound("defSound" ,CriteiConfig.SelectedCriticalDefSound)
+            changeCritSound("defSound", CriteiConfig.SelectedCriticalDefSound)
         end
         UIDropDownMenu_AddButton(info, level)
     end
 end
 ----------------------------------------------------------------------------------
-
-
--- Adicione um print fora do script do evento para verificar.
--- CriteiConfig:Hide() 
-
-------- Exemplo de Botão
--- CriteiConfig.Button = CreateFrame("Button", nil, CriteiConfig, "UIPanelButtonTemplate")
--- CriteiConfig.Button:SetWidth(100)
--- CriteiConfig.Button:SetHeight(30)
--- CriteiConfig.Button:SetPoint("TOP", 0, -100) -- Posição ajustada
--- CriteiConfig.Button:SetText("Clique em Mim")
--- CriteiConfig.Button:SetScript("OnClick", function()
---     print("Botão Clicado!")
--- end)
-
--------- Exemplo de Text Input
--- CriteiConfig.TextInput = CreateFrame("EditBox", nil, CriteiConfig, "InputBoxTemplate")
--- CriteiConfig.TextInput:SetWidth(200)
--- CriteiConfig.TextInput:SetHeight(20)
--- CriteiConfig.TextInput:SetPoint("TOP", 0, -70) -- Posição ajustada
--- CriteiConfig.TextInput:SetAutoFocus(false) -- Para não focar automaticamente

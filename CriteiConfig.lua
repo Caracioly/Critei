@@ -22,10 +22,14 @@ CriteiConfig:SetBackdrop({
         bottom = 4
     }
 })
-CriteiConfig:SetBackdropColor(0.2, 0.2, 0.2, 0.3)
+CriteiConfig:SetBackdropColor(0.2, 0.2, 0.2, 0.5)
+
+function doTheThing()
+    instanceName:SetText(string.format("%s", CriteiConfig.SelectedInstance))
+end
 
 -- Title
-CriteiConfig.Title = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+CriteiConfig.Title = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 CriteiConfig.Title:SetText("Critei Config")
 CriteiConfig.Title:SetPoint("TOP", 0, -10)
 
@@ -35,6 +39,40 @@ CriteiConfig.CloseButton:SetPoint("TOPRIGHT", -5, -5)
 CriteiConfig.CloseButton:SetScript("OnClick", function()
     CriteiConfig:Hide()
 end)
+
+instanceName = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+instanceName:SetPoint("TOP", 0, -50) -- text
+-----------------------------------------------------------------------------------------------
+highestCrit = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+highestCrit:SetPoint("TOPLEFT", 10, -65) -- text
+highestCrit:SetText("|cFFCD853FHighest Critical Damage|r")
+-------------------------------------------------------
+-- highestCritDamage = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+-- highestCritDamage:SetPoint("TOPLEFT", 10, -70) -- text
+-- highestCritDamage:SetText(""..ORANGERED.."4654545"..END)
+
+-- highestCritHeal = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+-- highestCritHeal:SetPoint("TOPLEFT", 10, -80) -- text
+-- highestCritHeal:SetText(GREENYELLOW.."Target: Defias maluco"..END)
+
+-- highestCritDef = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+-- highestCritDef:SetPoint("TOPLEFT", 10, -90) -- text
+-- highestCritDef:SetText(ROYALBLUE.."Frost nova"..END)
+---------------------------------------------------------------------------------------------
+
+
+-- -- Texto de Maior Cura Crítica
+-- local healingText = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+-- healingText:SetText("Highest Critical Healing: Qual skill ele usou / em quem")
+-- healingText:SetPoint("TOP", 0, -70)
+-- healingText:SetTextColor(0, 1, 0) -- Cor verde
+
+-- -- Texto de Maior Defesa Crítica
+-- local defenseText = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+-- defenseText:SetText("Highest Critical Defense: Qual skill ele Tomou / Quem que foi")
+-- defenseText:SetPoint("TOP", 0, -100)
+-- defenseText:SetTextColor(0, 0, 1) -- Cor azul
+
 
 -- critical def dropdown--
 local criticalDefDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
@@ -180,6 +218,7 @@ function InitializeInstanceDropDown(self, level)
             CriteiConfig.SelectedInstance = currentInstanceName
             UIDropDownMenu_SetText(CriteiConfig.SelectedInstance, CriteiConfig.InstanceDropDown)
             print(CriteiConfig.SelectedInstance)
+            doTheThing(CriteiConfig.SelectedInstance)
         end
         UIDropDownMenu_AddButton(info, level)
     end

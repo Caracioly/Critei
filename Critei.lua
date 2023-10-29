@@ -175,6 +175,8 @@ CritNotifier:SetScript("OnEvent", function()
         CriteiConfig.YellCheckbox:SetChecked(CRITEI_CONFIG.isYellOn)
         CriteiConfig.CritSoundCheckbox:SetChecked(CRITEI_CONFIG.isSoundOn)
 
+        instanceName:SetText(string.format("%s", CriteiConfig.SelectedInstance))
+
     elseif event == 'ZONE_CHANGED_NEW_AREA' then
         local inInstance, instanceType = IsInInstance()
         if inInstance and (instanceType == "party" or instanceType == "raid") then

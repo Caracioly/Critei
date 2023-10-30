@@ -11,7 +11,7 @@ localization = {
         soundDisabled = ORANGE .. "[Critei]" .. END .. " Sound disabled.",
         resetMessage = ORANGE .. "[Critei]" .. END .. " Resetting critical values.",
         soundNotFound = ORANGE .. "[Critei]" .. END .. " That sound don't exist.",
-        channelAddError = ORANGE .. "[Critei]" .. END ..
+        channelAddError = ORANGE .. "[Critei] " .. END ..
             "Could not add a channel, please consider removing any existing channels and reload.",
         autoAndSpellSCrit = "Crited %s with a %s.",
         healingSpellCrit = "Critically healed %s with %s.",

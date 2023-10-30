@@ -16,7 +16,6 @@ CritNotifier:RegisterEvent('CHAT_MSG_YELL')
 CritNotifier:RegisterEvent('ADDON_LOADED')
 CritNotifier:RegisterEvent("CHAT_MSG_CHANNEL")
 
-
 function changeCritSound(type, sound)
     if type == "defSound" then
         CRITEI_CONFIG.defSound = sound
@@ -174,12 +173,10 @@ CritNotifier:SetScript("OnEvent", function()
 
         showCritData("OverWorld")
 
-        chatID, chatName = GetChannelName("Critei");
+        chatID, chatName = GetChannelName("LFT");
         if not (chatID > 0 and chatName ~= nil) then
-            local channel_type, channel_name = JoinChannelByName("Critei", "resdres", nil)
-            if not (channel_type and channel_name) then
-                print(string.format(localization[CRITEI_CONFIG.language].channelAddError))
-            end
+            local channel_type, channel_name = JoinChannelByName("LFT", nil, nil)
+            -- print(string.format(localization[CRITEI_CONFIG.language].channelAddError))
         end
 
     elseif event == 'ZONE_CHANGED_NEW_AREA' then
@@ -293,7 +290,7 @@ CritNotifier:SetScript("OnEvent", function()
         end
 
     elseif event == "CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE" then
-        local endNameIndex = string.find(arg1, "'s") 
+        local endNameIndex = string.find(arg1, "'s")
         if endNameIndex and string.find(arg1, "crits") then
 
             targetName = string.sub(arg1, 1, endNameIndex) -- GET TARGET NAME

@@ -1,5 +1,5 @@
 ﻿## Interface: 11200
-## Title: |cFFFF00FFCritei|r
+## Title: Crite|cFFFF00FFi|r
 ## Notes: Crit Notifier
 ## Author: andre
 ## Version: 1.2.0

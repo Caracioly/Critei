@@ -10,6 +10,9 @@ localization = {
         soundEnabled = ORANGE .. "[Critei]" .. END .. " Sound activated.",
         soundDisabled = ORANGE .. "[Critei]" .. END .. " Sound disabled.",
         resetMessage = ORANGE .. "[Critei]" .. END .. " Resetting critical values.",
+        soundNotFound = ORANGE .. "[Critei]" .. END .. " That sound don't exist.",
+        channelAddError = ORANGE .. "[Critei]" .. END ..
+            "Could not add a channel, please consider removing any existing channels and reload.",
         autoAndSpellSCrit = "Crited %s with a %s.",
         healingSpellCrit = "Critically healed %s with %s.",
         defAutoCrit = "I took %s damage from a %s.",
@@ -33,6 +36,9 @@ localization = {
         soundEnabled = ORANGE .. "[Critei]" .. END .. " Som habilitado.",
         soundDisabled = ORANGE .. "[Critei]" .. END .. " Som desabilitado.",
         resetMessage = ORANGE .. "[Critei]" .. END .. " Resetando os valores criticos.",
+        soundNotFound = ORANGE .. "[Critei]" .. END .. " Esse som não existe",
+        channelAddError = ORANGE .. "[Critei]" .. END ..
+            "Não consegui adicionar o canal, tente remover um existente e reiniciar.",
         autoAndSpellSCrit = "Critei %s com %s.",
         healingSpellCrit = "Curei %s com %s.",
         defAutoCrit = "Tomei %s de dano de um %s.",

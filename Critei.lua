@@ -1,6 +1,9 @@
 local CritNotifier = CreateFrame("Frame")
 local playerName = UnitName("player")
-local spellName, targetName, critDamage, instance
+local spellName, targetName, critDamage, instance, chatID, chatName
+local isYellValid = false
+local yellKeywords = {"Critei com", "Crited with", "Critically healed with", "Curei com ", "I took damage from",
+                      "Tomei de dano d"}
 
 CritNotifier:RegisterEvent("VARIABLES_LOADED")
 CritNotifier:RegisterEvent("ZONE_CHANGED_NEW_AREA")
@@ -11,8 +14,8 @@ CritNotifier:RegisterEvent('CHAT_MSG_SPELL_SELF_DAMAGE')
 CritNotifier:RegisterEvent('CHAT_MSG_SPELL_SELF_BUFF')
 CritNotifier:RegisterEvent('CHAT_MSG_YELL')
 CritNotifier:RegisterEvent('ADDON_LOADED')
+CritNotifier:RegisterEvent("CHAT_MSG_CHANNEL")
 
-------------------FUNCTIONS------------------
 
 function changeCritSound(type, sound)
     if type == "defSound" then
@@ -22,7 +25,7 @@ function changeCritSound(type, sound)
     elseif type == "dmgSound" then
         CRITEI_CONFIG.dmgSound = sound
     else
-        print("That sound don't exist.")
+        print(string.format(localization[CRITEI_CONFIG.language].soundNotFound))
     end
 end
 
@@ -65,6 +68,13 @@ function SetInstanceRecord(stat, XcritDamage, XtargetName, XspellName)
         if instanceType == "none" then
             instanceName = "OverWorld"
         end
+        if not INSTANCE_RECORDS[instanceName][stat] or not INSTANCE_RECORDS[instanceName][stat].DAMAGE then
+            INSTANCE_RECORDS[instanceName][stat] = {
+                DAMAGE = 0,
+                TARGET_NAME = "",
+                SPELL_NAME = ""
+            }
+        end
         if XcritDamage > INSTANCE_RECORDS[instanceName][stat].DAMAGE then
             print(string.format(localization[CRITEI_CONFIG.language].recordBrokenINS, instanceName))
             INSTANCE_RECORDS[instanceName][stat].DAMAGE = XcritDamage
@@ -97,8 +107,6 @@ local function SendYellMessage(message)
         SendChatMessage(message, "YELL", nil)
     end
 end
-
-------------------EVENTS------------------
 
 CritNotifier:SetScript("OnEvent", function()
     -- When ADDON is loaded
@@ -166,6 +174,14 @@ CritNotifier:SetScript("OnEvent", function()
 
         showCritData("OverWorld")
 
+        chatID, chatName = GetChannelName("Critei");
+        if not (chatID > 0 and chatName ~= nil) then
+            local channel_type, channel_name = JoinChannelByName("Critei", "resdres", nil)
+            if not (channel_type and channel_name) then
+                print(string.format(localization[CRITEI_CONFIG.language].channelAddError))
+            end
+        end
+
     elseif event == 'ZONE_CHANGED_NEW_AREA' then
         local inInstance, instanceType = IsInInstance()
         if inInstance and (instanceType == "party" or instanceType == "raid") then
@@ -199,6 +215,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_CRIT", critDamage, targetName, spellName)
 
             if next(HIGHEST_CRIT) == nil or critDamage > HIGHEST_CRIT.DAMAGE then
+                SendChatMessage(CRITEI_CONFIG.dmgSound, "CHANNEL", nil, chatID)
                 PlaySound(CriteiConfig.SelectedCriticalDmgSound)
                 SetHihgestStat(HIGHEST_CRIT, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].autoAndSpellSCrit, critDamage,
@@ -222,6 +239,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_HEAL", critDamage, targetName, spellName)
 
             if next(HIGHEST_HEAL) == nil or critDamage > HIGHEST_HEAL.DAMAGE then
+                SendChatMessage(CRITEI_CONFIG.healSound, "CHANNEL", nil, chatID)
                 PlaySound(CriteiConfig.SelectedCriticalHealSound)
                 SetHihgestStat(HIGHEST_HEAL, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].healingSpellCrit, critDamage,
@@ -245,6 +263,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_CRIT", critDamage, targetName, spellName)
 
             if next(HIGHEST_CRIT) == nil or critDamage > HIGHEST_CRIT.DAMAGE then
+                SendChatMessage(CRITEI_CONFIG.dmgSound, "CHANNEL", nil, chatID)
                 PlaySound(CriteiConfig.SelectedCriticalDmgSound)
                 SetHihgestStat(HIGHEST_CRIT, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].autoAndSpellSCrit, critDamage,
@@ -266,6 +285,7 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_DEF", critDamage, targetName, spellName)
 
             if next(HIGHEST_DEF) == nil or critDamage > HIGHEST_DEF.DAMAGE then
+                SendChatMessage(CRITEI_CONFIG.defSound, "CHANNEL", nil, chatID)
                 PlaySound(CriteiConfig.SelectedCriticalDefSound)
                 SetHihgestStat(HIGHEST_DEF, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].defAutoCrit, critDamage, spellName))
@@ -273,7 +293,7 @@ CritNotifier:SetScript("OnEvent", function()
         end
 
     elseif event == "CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE" then
-        local endNameIndex = string.find(arg1, "'s") -- and crits
+        local endNameIndex = string.find(arg1, "'s") 
         if endNameIndex and string.find(arg1, "crits") then
 
             targetName = string.sub(arg1, 1, endNameIndex) -- GET TARGET NAME
@@ -291,27 +311,27 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_DEF", critDamage, targetName, spellName)
 
             if next(HIGHEST_DEF) == nil or critDamage > HIGHEST_DEF.DAMAGE then
+                SendChatMessage(CRITEI_CONFIG.defSound, "CHANNEL", nil, chatID)
                 PlaySound(CriteiConfig.SelectedCriticalDefSound)
                 SetHihgestStat(HIGHEST_DEF, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].defSpellCrit, critDamage, spellName))
             end
         end
 
-        -- when someone next to you crit
     elseif event == 'CHAT_MSG_YELL' and arg2 ~= playerName then
-        -- todo resolver isso aqui direito com localization
-        if string.find(arg1, "Critei") and string.find(arg1, "com") then
-            PlaySound(CRITEI_CONFIG.dmgSound)
-        elseif string.find(arg1, "Crited") and string.find(arg1, "with") then
-            PlaySound(CRITEI_CONFIG.dmgSound)
-        elseif string.find(arg1, "Critically healed") and string.find(arg1, "with") then
-            PlaySound(CRITEI_CONFIG.healSound)
-        elseif string.find(arg1, "Curei ") and string.find(arg1, " com ") then
-            PlaySound(CRITEI_CONFIG.healSound)
-        elseif string.find(arg1, "I took") and string.find(arg1, "damage from") then
-            PlaySound(CRITEI_CONFIG.defSound)
-        elseif string.find(arg1, "Tomei") and string.find(arg1, "de dano d") then
-            PlaySound(CRITEI_CONFIG.defSound)
+        for _, keyword in ipairs(yellKeywords) do
+            if string.find(arg1, keyword) then
+                isYellValid = true
+                break
+            end
+        end
+
+    elseif event == 'CHAT_MSG_CHANNEL' then
+        if arg8 == chatID and arg2 ~= playerName then
+            if isYellValid then
+                PlaySound(arg1)
+                isYellValid = false
+            end
         end
     end
 
@@ -332,6 +352,7 @@ CritNotifier:SetScript("OnEvent", function()
 
     SLASH_CRITEI1 = "/critei"
     SlashCmdList["CRITEI"] = function()
+        showCritData(CriteiConfig.SelectedInstance)
         CriteiConfig:Show()
     end
 end)

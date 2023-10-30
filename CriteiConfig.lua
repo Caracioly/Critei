@@ -279,7 +279,7 @@ CriteiConfig.CritSoundCheckbox:SetScript("OnClick", OnSoundCheckboxChanged)
 local languageList = {"en-us", "pt-br"}
 
 function InitializeLanguageDropDown(self, level)
-    local info = UIDropDownMenu_CreateInfo()
+    local info = {}
 
     for _, language in pairs(languageList) do
         local currentLanguage = language
@@ -296,7 +296,7 @@ end
 -- DROPDOWN INSTANCE function
 
 function InitializeInstanceDropDown(self, level)
-    local info = UIDropDownMenu_CreateInfo()
+    local info = {}
 
     for _, instanceName in pairs(CRITEI_CONFIG.exploredInstances) do
         local currentInstanceName = instanceName
@@ -315,7 +315,7 @@ end
 local soundList = {"-999", "auuu", "bonk", "minecraft", "omg", "oof", "taco", "vineboom", "weLive", "whoa"}
 
 function InitializeCriticalDmgDropDown(self, level)
-    local info = UIDropDownMenu_CreateInfo()
+    local info = {}
 
     for _, sound in pairs(soundList) do
         local currentSound = sound
@@ -332,7 +332,7 @@ function InitializeCriticalDmgDropDown(self, level)
 end
 
 function InitializeCriticalHealDropDown(self, level)
-    local info = UIDropDownMenu_CreateInfo()
+    local info = {}
 
     for _, sound in pairs(soundList) do
         local currentSound = sound
@@ -349,7 +349,7 @@ function InitializeCriticalHealDropDown(self, level)
 end
 
 function InitializeCriticalDefDropDown(self, level)
-    local info = UIDropDownMenu_CreateInfo()
+    local info = {}
 
     for _, sound in pairs(soundList) do
         local currentSound = sound

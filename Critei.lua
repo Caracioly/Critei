@@ -301,17 +301,17 @@ CritNotifier:SetScript("OnEvent", function()
     elseif event == 'CHAT_MSG_YELL' and arg2 ~= playerName then
         -- todo resolver isso aqui direito com localization
         if string.find(arg1, "Critei") and string.find(arg1, "com") then
-            PlaySound("crit")
+            PlaySound(CRITEI_CONFIG.dmgSound)
         elseif string.find(arg1, "Crited") and string.find(arg1, "with") then
-            PlaySound("crit")
+            PlaySound(CRITEI_CONFIG.dmgSound)
         elseif string.find(arg1, "Critically healed") and string.find(arg1, "with") then
-            PlaySound("heal")
+            PlaySound(CRITEI_CONFIG.healSound)
         elseif string.find(arg1, "Curei ") and string.find(arg1, " com ") then
-            PlaySound("heal")
+            PlaySound(CRITEI_CONFIG.healSound)
         elseif string.find(arg1, "I took") and string.find(arg1, "damage from") then
-            PlaySound("def")
+            PlaySound(CRITEI_CONFIG.defSound)
         elseif string.find(arg1, "Tomei") and string.find(arg1, "de dano d") then
-            PlaySound("def")
+            PlaySound(CRITEI_CONFIG.defSound)
         end
     end
 

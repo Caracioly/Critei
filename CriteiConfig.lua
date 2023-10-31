@@ -314,7 +314,7 @@ function InitializeInstanceDropDown(self, level)
 end
 
 -- All SFX
-local soundList = {"-999", "auuu", "bonk", "minecraft", "omg", "oof", "taco", "vineboom", "weLive", "whoa"}
+local soundList = {"-999", "auuu", "bonk", "dks", "minecraft", "omg", "oof", "pipe", "taco", "vineboom", "weLive", "whoa"}
 
 -- Select the Damage crit sound
 function InitializeCriticalDmgDropDown(self, level)

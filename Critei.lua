@@ -2,8 +2,8 @@ local CritNotifier = CreateFrame("Frame")
 local playerName = UnitName("player")
 local spellName, targetName, critDamage, instance, chatID, chatName
 local isYellValid = false
-local yellKeywords = {"Critei com", "Crited with", "Critically healed with", "Curei com ", "I took damage from",
-                      "Tomei de dano d"}
+local yellKeywords = {"Critei", "Crited", "Critically", "Curei", "took",
+                      "Tomei"}
 
 CritNotifier:RegisterEvent("VARIABLES_LOADED")
 CritNotifier:RegisterEvent("ZONE_CHANGED_NEW_AREA")
@@ -62,8 +62,8 @@ end
 
 function SetInstanceRecord(stat, XcritDamage, XtargetName, XspellName)
     local inInstance, instanceType = IsInInstance()
+    local instanceName = GetZoneText()
     if (inInstance and (instanceType == "party" or instanceType == "raid")) or instanceType == "none" then
-        local instanceName = GetZoneText()
         if instanceType == "none" then
             instanceName = "OverWorld"
         end
@@ -71,7 +71,7 @@ function SetInstanceRecord(stat, XcritDamage, XtargetName, XspellName)
             INSTANCE_RECORDS[instanceName][stat] = {
                 DAMAGE = 0,
                 TARGET_NAME = "",
-                SPELL_NAME = ""
+                SPELL_NAME = "",
             }
         end
         if XcritDamage > INSTANCE_RECORDS[instanceName][stat].DAMAGE then

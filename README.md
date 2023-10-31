@@ -8,16 +8,17 @@ A simple way to share your highest damage with your friends
 - **Also works with taken crits**
 
 ### In-game commands:
+
+Reset the current Critical but not the Records.
 ```shell
-/cc or /critclear (Reset the current Crit but not the Records)
+/cc
 ``` 
+Open the whole thing.
 ```shell
-/critei (Open the whole thing.)
+/critei 
 ``` 
 
 ![Alt text](https://i.imgur.com/e5E61PJ.png)
 
 ![Alt text](https://i.imgur.com/B9djW8l.png)
-
-Note that due to limitations of the 1.12 API, behind the scenes, some cases is missing.<br/>
 

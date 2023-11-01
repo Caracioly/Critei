@@ -6,7 +6,52 @@ CriteiConfig:SetMovable(true)
 CriteiConfig:EnableMouse(true)
 CriteiConfig:RegisterForDrag("LeftButton")
 tinsert(UISpecialFrames, CriteiConfig:GetName())
+local activeChat, color, target, channel, shareText, shareText2
+local ShareToolTip = CreateFrame("GameTooltip", "ShareToolTip", UIParent, "GameTooltipTemplate")
+ShareToolTip:AddLine("")
+ShareToolTip:AddLine("")
+ShareToolTip:Show()
 
+-- all chat colors
+local chatcolors = {
+    ["SAY"] = "|cffFFFFFF",
+    ["EMOTE"] = "|cffFF7E40",
+    ["YELL"] = "|cffFF3F40",
+    ["PARTY"] = "|cffAAABFE",
+    ["GUILD"] = "|cff3CE13F",
+    ["OFFICER"] = "|cff40BC40",
+    ["RAID"] = "|cffFF7D01",
+    ["RAID_WARNING"] = "|cffFF4700",
+    ["BATTLEGROUND"] = "|cffFF7D01",
+    ["WHISPER"] = "|cffFF7EFF",
+    ["CHANNEL"] = "|cffFEC1C0"
+}
+
+local function shareToChat()
+    StaticPopupDialogs["SHARE_DATA"] = {
+        text = "|cffffffff Send data into /|r" .. color .. string.lower(activeChat) .. "|r?",
+        button1 = "OK",
+        button2 = "Cancelar",
+        OnAccept = function()
+            if activeChat == "WHISPER" then
+                SendChatMessage(shareText, activeChat, nil, target)
+                SendChatMessage(shareText2, activeChat, nil, target)
+            elseif activeChat == "CHANNEL" then
+                SendChatMessage(shareText, activeChat, nil, channel)
+                SendChatMessage(shareText2, activeChat, nil, channel)
+            else
+                SendChatMessage(shareText, activeChat, nil)
+                SendChatMessage(shareText2, activeChat, nil)
+            end
+        end,
+        OnCancel = function()
+        end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        preferredIndex = 3
+    }
+end
 -- drag start function
 CriteiConfig:SetScript("OnDragStart", function()
     if not CriteiConfig.isMoving then
@@ -82,7 +127,7 @@ end
 
 -- frame title
 CriteiConfig.Title = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
-CriteiConfig.Title:SetText("Critei Config")
+CriteiConfig.Title:SetText("Critei")
 CriteiConfig.Title:SetPoint("TOPLEFT", 10, -10)
 
 -- Close button
@@ -100,19 +145,63 @@ separatorLineTitle:SetPoint("TOP", 0, -30)
 
 -- instance title
 instanceNameText = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-instanceNameText:SetPoint("TOP", 0, -32) 
+instanceNameText:SetPoint("TOP", 0, -32)
 
 -- critical record title
 highestCrit = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-highestCrit:SetPoint("TOPLEFT", 10, -52) 
+highestCrit:SetPoint("TOPLEFT", 10, -52)
 highestCrit:SetText("|cFFCD853FHighest Critical Damage Amount:|r")
+
+-- share critical damage button
+CriteiConfig.ShareDamage = CreateFrame("Button", nil, CriteiConfig, "UIPanelButtonTemplate")
+CriteiConfig.ShareDamage:SetPoint("TOPRIGHT", -10, -53)
+CriteiConfig.ShareDamage.text = CriteiConfig.ShareDamage:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+CriteiConfig.ShareDamage.text:SetFont("Fonts\\FRIZQT__.TTF", 9)
+CriteiConfig.ShareDamage.text:SetPoint("CENTER", 0, 0)
+CriteiConfig.ShareDamage:SetWidth(40)
+CriteiConfig.ShareDamage:SetHeight(12)
+CriteiConfig.ShareDamage.text:SetText("Share")
+CriteiConfig.ShareDamage:SetScript("OnClick", function()
+
+    activeChat = ChatFrameEditBox.chatType
+    color = chatcolors[activeChat]
+    if not color then
+        color = "|cff00FAF6"
+    end
+    target = ChatFrameEditBox.tellTarget
+    channel = ChatFrameEditBox.channelTarget
+    shareToChat()
+    StaticPopup_Show("SHARE_DATA")
+
+    shareText = "[Critei] Current " .. CriteiConfig.SelectedInstance .. " Damage Record:"
+    local critInfo = INSTANCE_RECORDS[CriteiConfig.SelectedInstance]["TOP_CRIT"]
+    if critInfo then
+        shareText2 = critInfo.DAMAGE .. " critical damage caused by " .. critInfo.SPELL_NAME .. " on " ..
+                         critInfo.TARGET_NAME
+    else
+        shareText2 = "No critical damage record available for " .. CriteiConfig.SelectedInstance
+    end
+end)
+
+CriteiConfig.ShareDamage:SetScript("OnEnter", function()
+    ShareToolTip:SetOwner(CriteiConfig.ShareDamage, "ANCHOR_RIGHT")
+    ShareToolTip:ClearLines()
+    ShareToolTip:AddLine("Send to Chat")
+    ShareToolTip:AddLine("|cffffffffShare your critical damage record to the current chat.")
+    ShareToolTip:Show()
+end)
+
+CriteiConfig.ShareDamage:SetScript("OnLeave", function()
+    ShareToolTip:Hide()
+end)
+
 -- spell name
 highestCritSpell = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 highestCritSpell:SetPoint("TOPLEFT", 20, -65)
 highestCritSpell:SetText("[Spell Name]|cffffffff Empty.")
 -- target name
 highestCritTarget = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-highestCritTarget:SetPoint("TOPLEFT", 20, -75) 
+highestCritTarget:SetPoint("TOPLEFT", 20, -75)
 highestCritTarget:SetText("[Target Name]|cffffffff Empty.")
 -- damage amount
 highestCritDamage = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
@@ -127,19 +216,62 @@ separatorLineHEAL:SetPoint("TOP", 0, -100)
 
 -- heal record title
 highestHeal = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-highestHeal:SetPoint("TOPLEFT", 10, -103) 
+highestHeal:SetPoint("TOPLEFT", 10, -103)
 highestHeal:SetText("|cFFADFF2FHighest Critical Heal Amount:|r")
+
+CriteiConfig.ShareHeal = CreateFrame("Button", nil, CriteiConfig, "UIPanelButtonTemplate")
+CriteiConfig.ShareHeal:SetPoint("TOPRIGHT", -10, -104)
+CriteiConfig.ShareHeal.text = CriteiConfig.ShareHeal:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+CriteiConfig.ShareHeal.text:SetFont("Fonts\\FRIZQT__.TTF", 9)
+CriteiConfig.ShareHeal.text:SetPoint("CENTER", 0, 0)
+CriteiConfig.ShareHeal:SetWidth(40)
+CriteiConfig.ShareHeal:SetHeight(12)
+CriteiConfig.ShareHeal.text:SetText("Share")
+CriteiConfig.ShareHeal:SetScript("OnClick", function()
+
+    activeChat = ChatFrameEditBox.chatType
+    color = chatcolors[activeChat]
+    if not color then
+        color = "|cff00FAF6"
+    end
+    target = ChatFrameEditBox.tellTarget
+    channel = ChatFrameEditBox.channelTarget
+    shareToChat()
+    StaticPopup_Show("SHARE_DATA")
+
+    shareText = "[Critei] Current " .. CriteiConfig.SelectedInstance .. " Heal Record:"
+    local critInfo = INSTANCE_RECORDS[CriteiConfig.SelectedInstance]["TOP_HEAL"]
+    if critInfo then
+        shareText2 = critInfo.DAMAGE .. " critical healing from " .. critInfo.SPELL_NAME .. " on " ..
+                         critInfo.TARGET_NAME
+    else
+        shareText2 = "No critical record available for " .. CriteiConfig.SelectedInstance
+    end
+end)
+
+CriteiConfig.ShareHeal:SetScript("OnEnter", function()
+    ShareToolTip:SetOwner(CriteiConfig.ShareHeal, "ANCHOR_RIGHT")
+    ShareToolTip:ClearLines()
+    ShareToolTip:AddLine("Send to Chat")
+    ShareToolTip:AddLine("|cffffffffShare your critical heal record to the current chat.")
+    ShareToolTip:Show()
+end)
+
+CriteiConfig.ShareHeal:SetScript("OnLeave", function()
+    ShareToolTip:Hide()
+end)
+
 -- spell name
 highestHealSpell = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-highestHealSpell:SetPoint("TOPLEFT", 20, -115) 
+highestHealSpell:SetPoint("TOPLEFT", 20, -115)
 highestHealSpell:SetText("[Spell Name]|cffffffff Empty.")
 -- target name
 highestHealTarget = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-highestHealTarget:SetPoint("TOPLEFT", 20, -125) 
+highestHealTarget:SetPoint("TOPLEFT", 20, -125)
 highestHealTarget:SetText("[Target Name]|cffffffff Empty.")
 -- heal amount
 highestHealDamage = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-highestHealDamage:SetPoint("TOPLEFT", 20, -135) 
+highestHealDamage:SetPoint("TOPLEFT", 20, -135)
 highestHealDamage:SetText("[Heal Amount]|cffffffff Empty.")
 
 local separatorLineDEF = CriteiConfig:CreateTexture(nil, "BACKGROUND")
@@ -152,9 +284,51 @@ separatorLineDEF:SetPoint("TOP", 0, -150)
 highestDef = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 highestDef:SetPoint("TOPLEFT", 10, -153)
 highestDef:SetText("|cFF4169E1Highest Damage Taken Amount:|r")
+
+CriteiConfig.ShareDef = CreateFrame("Button", nil, CriteiConfig, "UIPanelButtonTemplate")
+CriteiConfig.ShareDef:SetPoint("TOPRIGHT", -10, -154)
+CriteiConfig.ShareDef.text = CriteiConfig.ShareDef:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+CriteiConfig.ShareDef.text:SetFont("Fonts\\FRIZQT__.TTF", 9)
+CriteiConfig.ShareDef.text:SetPoint("CENTER", 0, 0)
+CriteiConfig.ShareDef:SetWidth(40)
+CriteiConfig.ShareDef:SetHeight(12)
+CriteiConfig.ShareDef.text:SetText("Share")
+CriteiConfig.ShareDef:SetScript("OnClick", function()
+
+    activeChat = ChatFrameEditBox.chatType
+    color = chatcolors[activeChat]
+    if not color then
+        color = "|cff00FAF6"
+    end
+    target = ChatFrameEditBox.tellTarget
+    channel = ChatFrameEditBox.channelTarget
+    shareToChat()
+    StaticPopup_Show("SHARE_DATA")
+
+    shareText = "[Critei] Current " .. CriteiConfig.SelectedInstance .. " Damage Taken Record:"
+    local critInfo = INSTANCE_RECORDS[CriteiConfig.SelectedInstance]["TOP_DEF"]
+    if critInfo then
+        shareText2 = critInfo.DAMAGE .. " damage taken from " .. critInfo.SPELL_NAME .. " by " .. critInfo.TARGET_NAME
+    else
+        shareText2 = "No critical damage record available for " .. CriteiConfig.SelectedInstance
+    end
+end)
+
+CriteiConfig.ShareDef:SetScript("OnEnter", function()
+    ShareToolTip:SetOwner(CriteiConfig.ShareDef, "ANCHOR_RIGHT")
+    ShareToolTip:ClearLines()
+    ShareToolTip:AddLine("Send to Chat")
+    ShareToolTip:AddLine("|cffffffffShare your critical damage taken record to the current chat.")
+    ShareToolTip:Show()
+end)
+
+CriteiConfig.ShareDef:SetScript("OnLeave", function()
+    ShareToolTip:Hide()
+end)
+
 -- spell name
 highestDefSpell = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-highestDefSpell:SetPoint("TOPLEFT", 20, -165) 
+highestDefSpell:SetPoint("TOPLEFT", 20, -165)
 highestDefSpell:SetText("[Spell Name]|cffffffff Empty.")
 -- source name
 highestDefTarget = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
@@ -162,7 +336,7 @@ highestDefTarget:SetPoint("TOPLEFT", 20, -175)
 highestDefTarget:SetText("[Source Name]|cffffffff Empty.")
 -- taken amount
 highestDefDamage = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-highestDefDamage:SetPoint("TOPLEFT", 20, -185) 
+highestDefDamage:SetPoint("TOPLEFT", 20, -185)
 highestDefDamage:SetText("[Taken Amount]|cffffffff Empty.")
 
 local separatorLineFinal = CriteiConfig:CreateTexture(nil, "BACKGROUND")
@@ -174,15 +348,15 @@ separatorLineFinal:SetPoint("TOP", 0, -205)
 -- critical def sound text
 local criticalDefDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 criticalDefDropDown:SetText("Crit Def SFX:")
-criticalDefDropDown:SetPoint("BOTTOMLEFT", 15, 140) 
+criticalDefDropDown:SetPoint("BOTTOMLEFT", 15, 140)
 -- critical def sound dropdown
 CriteiConfig.criticalDefDropDown = CreateFrame("Frame", "criticalDefDropDown", CriteiConfig, "UIDropDownMenuTemplate")
-CriteiConfig.criticalDefDropDown:SetPoint("BOTTOMRIGHT", -120, 130) 
+CriteiConfig.criticalDefDropDown:SetPoint("BOTTOMRIGHT", -120, 130)
 
 -- critical heal sound text
 local criticalHealDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 criticalHealDropDown:SetText("Crit Heal SFX:")
-criticalHealDropDown:SetPoint("BOTTOMLEFT", 15, 190) 
+criticalHealDropDown:SetPoint("BOTTOMLEFT", 15, 190)
 -- critical heal sound dropdown
 CriteiConfig.criticalHealDropDown = CreateFrame("Frame", "criticalHealDropDown", CriteiConfig, "UIDropDownMenuTemplate")
 CriteiConfig.criticalHealDropDown:SetPoint("BOTTOMRIGHT", -120, 180)
@@ -201,15 +375,15 @@ languageDropDown:SetText("Language:")
 languageDropDown:SetPoint("BOTTOMLEFT", 15, 115) -- text
 -- language dropdown
 CriteiConfig.languageDropDown = CreateFrame("Frame", "languageDropDown", CriteiConfig, "UIDropDownMenuTemplate")
-CriteiConfig.languageDropDown:SetPoint("BOTTOMRIGHT", -120, 105) 
+CriteiConfig.languageDropDown:SetPoint("BOTTOMRIGHT", -120, 105)
 
 -- instance dropdown text
 local instanceDropDown = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 instanceDropDown:SetText("Select a Instance:")
-instanceDropDown:SetPoint("BOTTOMLEFT", 15, 215) 
+instanceDropDown:SetPoint("BOTTOMLEFT", 15, 215)
 -- instance dropdown
 CriteiConfig.InstanceDropDown = CreateFrame("Frame", "InstanceDropDown", CriteiConfig, "UIDropDownMenuTemplate")
-CriteiConfig.InstanceDropDown:SetPoint("BOTTOMRIGHT", -120, 205) 
+CriteiConfig.InstanceDropDown:SetPoint("BOTTOMRIGHT", -120, 205)
 CriteiConfig.SelectedInstance = "OverWorld"
 UIDropDownMenu_SetText(CriteiConfig.SelectedInstance, CriteiConfig.InstanceDropDown)
 
@@ -222,23 +396,23 @@ separatorLineBOTTOM:SetPoint("BOTTOM", 0, 90)
 -- clear text
 local clearCheckBoxTitle = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 clearCheckBoxTitle:SetText("Crit Reset on Instance Entry")
-clearCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 70) 
+clearCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 70)
 -- clear checkbox
 CriteiConfig.ClearCheckbox = CreateFrame("CheckButton", "ClearCheckBox", CriteiConfig, "UICheckButtonTemplate")
-CriteiConfig.ClearCheckbox:SetPoint("BOTTOMRIGHT", -30, 60) 
+CriteiConfig.ClearCheckbox:SetPoint("BOTTOMRIGHT", -30, 60)
 
 -- yell text
 local yellCheckBoxTitle = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 yellCheckBoxTitle:SetText("Yell Message on Crit")
-yellCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 45) 
+yellCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 45)
 -- yell check box
 CriteiConfig.YellCheckbox = CreateFrame("CheckButton", "YellCheckBox", CriteiConfig, "UICheckButtonTemplate")
-CriteiConfig.YellCheckbox:SetPoint("BOTTOMRIGHT", -30, 35) 
+CriteiConfig.YellCheckbox:SetPoint("BOTTOMRIGHT", -30, 35)
 
 -- sound text
 local soundCheckBoxTitle = CriteiConfig:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 soundCheckBoxTitle:SetText("Play Sound on Crit")
-soundCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 20) 
+soundCheckBoxTitle:SetPoint("BOTTOMLEFT", 15, 20)
 -- sound checkbox
 CriteiConfig.CritSoundCheckbox = CreateFrame("CheckButton", "CritSoundCheckBox", CriteiConfig, "UICheckButtonTemplate")
 CriteiConfig.CritSoundCheckbox:SetPoint("BOTTOMRIGHT", -30, 10)
@@ -314,7 +488,8 @@ function InitializeInstanceDropDown(self, level)
 end
 
 -- All SFX
-local soundList = {"-999", "auuu", "bonk", "dks", "minecraft", "omg", "oof", "pipe", "taco", "vineboom", "weLive", "whoa"}
+local soundList = {"-999", "auuu", "bonk", "dks", "minecraft", "omg", "oof", "pipe", "taco", "vineboom", "weLive",
+                   "whoa"}
 
 -- Select the Damage crit sound
 function InitializeCriticalDmgDropDown(self, level)

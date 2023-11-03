@@ -6,8 +6,10 @@ CriteiConfig:SetMovable(true)
 CriteiConfig:EnableMouse(true)
 CriteiConfig:RegisterForDrag("LeftButton")
 tinsert(UISpecialFrames, CriteiConfig:GetName())
+
 local activeChat, color, target, channel, shareText, shareText2
 local ShareToolTip = CreateFrame("GameTooltip", "ShareToolTip", UIParent, "GameTooltipTemplate")
+
 ShareToolTip:AddLine("")
 ShareToolTip:AddLine("")
 ShareToolTip:Show()
@@ -29,9 +31,9 @@ local chatcolors = {
 
 local function shareToChat()
     StaticPopupDialogs["SHARE_DATA"] = {
-        text = "|cffffffff Send data into /|r" .. color .. string.lower(activeChat) .. "|r?",
+        text = "|cffffffff Send data into /|r" .. color .. string.lower(activeChat) .. " |r?",
         button1 = "OK",
-        button2 = "Cancelar",
+        button2 = "Cancel",
         OnAccept = function()
             if activeChat == "WHISPER" then
                 SendChatMessage(shareText, activeChat, nil, target)
@@ -488,7 +490,7 @@ function InitializeInstanceDropDown(self, level)
 end
 
 -- All SFX
-local soundList = {"-999", "auuu", "bonk", "dks", "minecraft", "omg", "oof", "pipe", "taco", "vineboom", "weLive",
+soundList = {"-999", "auuu", "bonk", "dks", "minecraft", "omg", "oof", "pipe", "taco", "vineboom", "weLive",
                    "whoa"}
 
 -- Select the Damage crit sound
@@ -544,3 +546,5 @@ function InitializeCriticalDefDropDown(self, level)
         UIDropDownMenu_AddButton(info, level)
     end
 end
+
+CriteiConfig:Hide()

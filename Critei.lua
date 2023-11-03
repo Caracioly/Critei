@@ -2,11 +2,10 @@ local CritNotifier = CreateFrame("Frame")
 local playerName = UnitName("player")
 local spellName, targetName, critDamage, instance, chatID, chatName
 local isYellValid = false
-local yellKeywords = {"Critei", "Crited", "Critically", "Curei", "took",
-                      "Tomei"}
+local yellKeywords = {"Critei", "Crited", "Critically", "Curei", "took", "Tomei"}
 
 CritNotifier:RegisterEvent("VARIABLES_LOADED")
-CritNotifier:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+CritNotifier:RegisterEvent("PLAYER_ENTERING_WORLD")
 CritNotifier:RegisterEvent('CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS')
 CritNotifier:RegisterEvent('CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE')
 CritNotifier:RegisterEvent('CHAT_MSG_COMBAT_SELF_HITS')
@@ -71,7 +70,7 @@ function SetInstanceRecord(stat, XcritDamage, XtargetName, XspellName)
             INSTANCE_RECORDS[instanceName][stat] = {
                 DAMAGE = 0,
                 TARGET_NAME = "",
-                SPELL_NAME = "",
+                SPELL_NAME = ""
             }
         end
         if XcritDamage > INSTANCE_RECORDS[instanceName][stat].DAMAGE then
@@ -179,7 +178,7 @@ CritNotifier:SetScript("OnEvent", function()
             -- print(string.format(localization[CRITEI_CONFIG.language].channelAddError))
         end
 
-    elseif event == 'ZONE_CHANGED_NEW_AREA' then
+    elseif event == 'PLAYER_ENTERING_WORLD' then
         local inInstance, instanceType = IsInInstance()
         if inInstance and (instanceType == "party" or instanceType == "raid") then
             instance = instanceType == "party" and "Dungeon" or "Raid"
@@ -222,12 +221,12 @@ CritNotifier:SetScript("OnEvent", function()
 
         -- when a healing spell crit 
     elseif event == 'CHAT_MSG_SPELL_SELF_BUFF' then
-        if string.find(arg1, "critically") then
+        if string.find(arg1, "heals") then
 
             local startNameIndex, endNameIndex = string.find(arg1, "heals "), string.find(arg1, "for") -- GET TARGET NAME
             targetName = string.sub(arg1, startNameIndex + 6, endNameIndex - 2)
 
-            local startIndex, endIndex = string.find(arg1, "Your "), string.find(arg1, "critically") -- GET SPELL NAME
+            local startIndex, endIndex = string.find(arg1, "Your "), string.find(arg1, "heals") -- GET SPELL NAME
             spellName = string.sub(arg1, startIndex + 5, endIndex - 2)
 
             local startDamageIndex, endDamageIndex = string.find(arg1, "for "), string.find(arg1, "%.")
@@ -236,11 +235,11 @@ CritNotifier:SetScript("OnEvent", function()
             SetInstanceRecord("TOP_HEAL", critDamage, targetName, spellName)
 
             if next(HIGHEST_HEAL) == nil or critDamage > HIGHEST_HEAL.DAMAGE then
-                SendChatMessage(CRITEI_CONFIG.healSound, "CHANNEL", nil, chatID)
-                PlaySound(CriteiConfig.SelectedCriticalHealSound)
-                SetHihgestStat(HIGHEST_HEAL, critDamage, targetName, spellName)
                 SendYellMessage(string.format(localization[CRITEI_CONFIG.language].healingSpellCrit, critDamage,
                     spellName))
+                PlaySound(CriteiConfig.SelectedCriticalHealSound)
+                SetHihgestStat(HIGHEST_HEAL, critDamage, targetName, spellName)
+                SendChatMessage(CRITEI_CONFIG.healSound, "CHANNEL", nil, chatID)
             end
         end
 
@@ -315,9 +314,13 @@ CritNotifier:SetScript("OnEvent", function()
             end
         end
 
+        local soundList = {"-999", "auuu", "bonk", "dks", "minecraft", "omg", "oof", "pipe", "taco", "vineboom",
+                           "weLive", "whoa"}
+
     elseif event == 'CHAT_MSG_YELL' and arg2 ~= playerName then
         for _, keyword in ipairs(yellKeywords) do
             if string.find(arg1, keyword) then
+                print("Received YELL message: " .. arg1)
                 isYellValid = true
                 break
             end
@@ -325,9 +328,13 @@ CritNotifier:SetScript("OnEvent", function()
 
     elseif event == 'CHAT_MSG_CHANNEL' then
         if arg8 == chatID and arg2 ~= playerName then
-            if isYellValid then
-                PlaySound(arg1)
-                isYellValid = false
+            if string.find(table.concat(soundList, " "), arg1) then
+                if isYellValid then
+                    print("Playing sound: " .. arg1)
+                    PlaySound(arg1)
+                    isYellValid = false
+                    print("Changed to false")
+                end
             end
         end
     end

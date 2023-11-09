@@ -66,12 +66,8 @@ function SetInstanceRecord(stat, XcritDamage, XtargetName, XspellName)
         if instanceType == "none" then
             instanceName = "OverWorld"
         end
-        if not INSTANCE_RECORDS[instanceName][stat] or not INSTANCE_RECORDS[instanceName][stat].DAMAGE then
-            INSTANCE_RECORDS[instanceName][stat] = {
-                DAMAGE = 0,
-                TARGET_NAME = "",
-                SPELL_NAME = ""
-            }
+        if not INSTANCE_RECORDS[instanceName] then
+            AddInstanceToRecords(instanceName)
         end
         if XcritDamage > INSTANCE_RECORDS[instanceName][stat].DAMAGE then
             print(string.format(localization[CRITEI_CONFIG.language].recordBrokenINS, instanceName))
@@ -145,7 +141,6 @@ CritNotifier:SetScript("OnEvent", function()
         }
 
     elseif event == "VARIABLES_LOADED" then
-        -- CheckVariabletype()
         CriteiConfig.SelectedCriticalDefSound = CRITEI_CONFIG.defSound
         UIDropDownMenu_SetText(CriteiConfig.SelectedCriticalDefSound, CriteiConfig.criticalDefDropDown)
 
@@ -175,7 +170,6 @@ CritNotifier:SetScript("OnEvent", function()
         chatID, chatName = GetChannelName("LFT");
         if not (chatID > 0 and chatName ~= nil) then
             local channel_type, channel_name = JoinChannelByName("LFT", nil, nil)
-            -- print(string.format(localization[CRITEI_CONFIG.language].channelAddError))
         end
 
     elseif event == 'PLAYER_ENTERING_WORLD' then
@@ -183,8 +177,6 @@ CritNotifier:SetScript("OnEvent", function()
         if inInstance and (instanceType == "party" or instanceType == "raid") then
             instance = instanceType == "party" and "Dungeon" or "Raid"
             local instanceName = GetZoneText()
-
-            AddInstanceToRecords(instanceName)
 
             print(string.format(localization[CRITEI_CONFIG.language].enteringInstance, instanceName))
             if CRITEI_CONFIG.isClearOn then
@@ -357,4 +349,3 @@ CritNotifier:SetScript("OnEvent", function()
         CriteiConfig:Show()
     end
 end)
-
